@@ -17,6 +17,41 @@ export function initPCDRoutes(
   app: express.Application,
   _context: ApplicationContext
 ): void {
+
+  app.post("/rsvp", async (req: Request, res: Response, next: NextFunction) => {
+    //To RSVP, no zk needed
+    const request = req.body as RSVPRequest;
+
+    const rsvpEmail = request.email;
+    let found = prisma.rsvp.findUnique({
+      where:{
+        email: rsvpEmail
+      }
+    });
+
+    if (found !== null){
+      throw new Error("User already RSVP-ed");
+    }
+
+    prisma.rsvp.create({
+      data:{
+        name: request.name,
+        telegram: request.telegram,
+        email: request.telegram,
+        eventId: request.eventId,
+      }
+    })
+    res.send("RSVP-ed");
+
+  });
+  app.post("/create-event", async (req: Request, res: Response, next: NextFunction) => {
+    const signal : CreateEventSignal = {
+      name: string,
+      description: string,
+    }
+  });
+  const signalHash = sha256(stableStringify(signal));
+
   app.post(
     "/create-poll",
     async (req: Request, res: Response, next: NextFunction) => {
@@ -205,6 +240,28 @@ export function initPCDRoutes(
   });
 }
 
+export type RSVPRequest = {
+  name: string;
+  telegram: string;
+  uuid: string | undefined;
+  email: string;
+  eventId: string
+};
+
+export type CreateEventRequest = {
+  name: string;
+  description: string;
+  spotsAvailable: number;
+  hostuuid: string;
+  hostCommitment: string;
+  expiry: Date;
+};
+
+export type CreateEventSignal = {
+  name: string,
+  description: string
+};
+
 export type VoteRequest = {
   pollId: string;
   voterType: UserType;
@@ -214,6 +271,9 @@ export type VoteRequest = {
   voteIdx: number;
   proof: string;
 };
+
+
+
 
 export type VoteSignal = {
   pollId: string;

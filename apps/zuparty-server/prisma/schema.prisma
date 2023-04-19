@@ -15,30 +15,34 @@ datasource db {
 // If user type is NONANON, the PCD is a Semaphore Signature PCD which signs the signal. We extract the commitment
 //    from the verified PCD and then we check that it is part of a valid group.
 
-
 model Event {
-   id String @id
-   host User
-   cohosts User[]
-   createdAt DateTime @default(now())
-   deadline DateTime
-   description String
-   rsvps RSVP[]
+    id          String   @id
+    host        User     @relation(fields: [userId], references: [id])
+    createdAt   DateTime @default(now())
+    deadline    DateTime
+    name String
+    description String
+    spotsAvailable Int
+    spotsTaken Int @default(0)
+    rsvps       RSVP[]
+    userId      String
 }
 
 model User {
-    id String @id
-    uuid String
-    name String
+    id    String  @id
+    uuid  String
+    name  String
     email String
+    Event Event[]
 }
 
 model RSVP {
-  id String @id
-  uuid String?
-  name String
-  telegram String
-  email String
-  proof Json
+    id       String  @id
+    uuid     String?
+    name     String
+    telegram String
+    email    String
+    Event    Event?  @relation(fields: [eventId], references: [id])
+    eventId  String?
 }
 
