@@ -1,8 +1,10 @@
+import {Route, Switch} from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "../components/core/Button";
 import { CreatePoll } from "../components/CreatePoll";
 import { LoginScreen } from "../components/LoginScreen";
+import { EventPage } from "../components/EventPage";
 import { Polls } from "../components/Polls";
 import { ErrorOverlay, ZupollError } from "../components/shared/ErrorOverlay";
 import { SEMAPHORE_ADMIN_GROUP_URL } from "../src/util";
@@ -56,7 +58,8 @@ export default function Page() {
         {accessToken ? (
           <>
             <LoggedInHeader>
-              Zuzalu Polls
+              Zuzalu Events
+              [link]Create Event
               <Button onClick={logout}>Logout</Button>
             </LoggedInHeader>
             {group == SEMAPHORE_ADMIN_GROUP_URL && (
@@ -74,7 +77,7 @@ export default function Page() {
             )}
           </>
         ) : (
-          <LoginScreen updateAccessToken={updateAccessToken} />
+          <EventPage />
         )}
       </ReferendumSection>
     </Wrap>

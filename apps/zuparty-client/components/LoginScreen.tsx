@@ -10,7 +10,7 @@ export function LoginScreen({
   return (
     <Bg>
       <Header>
-        <img src="/zuzalulogo.webp" alt="Zuzalu" width="160" height="42" />
+        <img src="/zuparty-logo.png" alt="Zuzalu" width="160" height="42" />
         <H1>Polling</H1>
       </Header>
       <Body>
