@@ -45,199 +45,31 @@ export function initPCDRoutes(
 
   });
   app.post("/create-event", async (req: Request, res: Response, next: NextFunction) => {
+    const request = req.body as CreateEventRequest;
+    
     const signal : CreateEventSignal = {
-      name: string,
-      description: string,
+      name: request.name,
+      description: request.description,
     }
-  });
-  const signalHash = sha256(stableStringify(signal));
 
-  app.post(
-    "/create-poll",
-    async (req: Request, res: Response, next: NextFunction) => {
-      const request = req.body as CreatePollRequest;
-
-      // can't use nullifierhash inside signal cuz it is generated after signal is input into proof.
-      const signal: PollSignal = {
-        pollType: request.pollType,
-        body: request.body,
-        expiry: request.expiry,
-        options: request.options,
-        voterSemaphoreGroupUrls: request.voterSemaphoreGroupUrls,
-      };
-      const signalHash = sha256(stableStringify(signal));
-
-      try {
-        if (request.pollsterType == UserType.ANON) {
-          const nullifier = await verifyGroupProof(
-            request.pollsterSemaphoreGroupUrl!,
-            request.proof,
-            {
-              signal: signalHash,
-              allowedGroups: [SEMAPHORE_ADMIN_GROUP_URL!],
-              claimedExtNullifier: signalHash,
-            }
-          );
-
-          const newPoll = await prisma.poll.create({
-            data: {
-              id: signalHash,
-              pollsterType: "ANON",
-              pollsterNullifier: nullifier,
-              pollsterSemaphoreGroupUrl: request.pollsterSemaphoreGroupUrl,
-              pollType: request.pollType,
-              body: request.body,
-              expiry: request.expiry,
-              options: request.options,
-              voterSemaphoreGroupUrls: request.voterSemaphoreGroupUrls,
-              proof: request.proof,
-            },
-          });
-
-          res.json({
-            id: newPoll.id,
-          });
-        } else if (request.pollsterType == UserType.NONANON) {
-          // TODO: ok we need to fix this nullfier cuz it's fake. we should generate our own cuz we know the commitment.
-          const nullifier = await verifySignatureProof(
-            request.pollsterCommitment!,
-            request.proof,
-            signalHash,
-            [SEMAPHORE_ADMIN_GROUP_URL!]
-          );
-          const pollsterName = await fetchAndVerifyName(
-            request.pollsterCommitment!,
-            request.pollsterUuid!
-          );
-
-          const newPoll = await prisma.poll.create({
-            data: {
-              id: signalHash,
-              pollsterType: "NONANON",
-              pollsterNullifier: nullifier,
-              pollsterName: pollsterName,
-              pollsterUuid: request.pollsterUuid,
-              pollsterCommitment: request.pollsterCommitment,
-              pollType: request.pollType,
-              body: request.body,
-              expiry: request.expiry,
-              options: request.options,
-              voterSemaphoreGroupUrls: request.voterSemaphoreGroupUrls,
-              proof: request.proof,
-            },
-          });
-
-          res.json({
-            id: newPoll.id,
-          });
-        } else {
-          throw new Error("Unknown pollster type");
-        }
-
-        res.send("ok");
-      } catch (e) {
-        console.error(e);
-        next(e);
-      }
-    }
-  );
-
-  app.post("/vote", async (req: Request, res: Response, next: NextFunction) => {
-    const request = req.body as VoteRequest;
-
-    const signal: VoteSignal = {
-      pollId: request.pollId,
-      voteIdx: request.voteIdx,
-    };
     const signalHash = sha256(stableStringify(signal));
 
-    try {
-      const poll = await prisma.poll.findUnique({
-        where: {
-          id: request.pollId,
-        },
-      });
-      if (poll === null) {
-        throw new Error("Invalid pollId");
+    // const nullifier = await verifyGroupProof(
+    //   "URL_PLACEHOLDER",
+    //   request.proof
+    // );
+    //add zk later
+
+    prisma.event.create({
+      data:{
+        name: request.name,
+        description: request.description,
+        deadline: request.expiry
       }
-      if (request.voteIdx < 0 || request.voteIdx >= poll.options.length) {
-        throw new Error("Invalid vote idx");
-      }
+    })
 
-      if (poll.expiry < new Date()) {
-        throw new Error("Poll has expired.");
-      }
-
-      if (request.voterType == UserType.ANON) {
-        const nullifier = await verifyGroupProof(
-          request.voterSemaphoreGroupUrl!,
-          request.proof,
-          {
-            signal: signalHash,
-            allowedGroups: poll.voterSemaphoreGroupUrls,
-            claimedExtNullifier: poll.id,
-          }
-        );
-
-        const previousVote = await prisma.vote.findUnique({
-          where: {
-            voterNullifier: nullifier,
-          },
-        });
-        if (previousVote !== null) {
-          throw new Error("User has already voted");
-        }
-
-        const newVote = await prisma.vote.create({
-          data: {
-            pollId: request.pollId,
-            voterType: "ANON",
-            voterNullifier: nullifier,
-            voterSemaphoreGroupUrl: request.voterSemaphoreGroupUrl,
-            voteIdx: request.voteIdx,
-            proof: request.proof,
-          },
-        });
-        res.json({
-          id: newVote.id,
-        });
-      } else if (request.voterType == UserType.NONANON) {
-        // TODO: ok we need to fix this nullfier cuz it's fake. we should generate our own cuz we know the commitment.
-        const nullifier = await verifySignatureProof(
-          request.voterCommitment!,
-          request.proof,
-          signalHash,
-          poll.voterSemaphoreGroupUrls
-        );
-        const voterName = await fetchAndVerifyName(
-          request.voterCommitment!,
-          request.voterUuid!
-        );
-
-        const newVote = await prisma.vote.create({
-          data: {
-            pollId: request.pollId,
-            voterType: "NONANON",
-            voterNullifier: nullifier,
-            voterName: voterName,
-            voterUuid: request.voterUuid,
-            voterCommitment: request.voterCommitment,
-            voteIdx: request.voteIdx,
-            proof: request.proof,
-          },
-        });
-
-        res.json({
-          id: newVote.id,
-        });
-      } else {
-        throw new Error("Unknown voter type");
-      }
-    } catch (e) {
-      console.error(e);
-      next(e);
-    }
   });
+  
 }
 
 export type RSVPRequest = {
