@@ -1,0 +1,3 @@
+node_modules
+apps/zuparty-client/.next
+.env.local
