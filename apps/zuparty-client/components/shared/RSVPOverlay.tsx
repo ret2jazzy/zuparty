@@ -3,63 +3,79 @@ import { FormEventHandler, useState } from "react";
 import styled from "styled-components";
 import { Overlay } from "./Overlay";
 import { Button } from "../core/Button";
+import { useRSVPMutation } from "../../hooks/useRSVPMutation";
+
+type RSVPOverlayProps = {
+  eventId: string;
+  onClose: () => void;
+}
 
 export function RSVPOverlay({
+  eventId,
   onClose,
-}: {
-  onClose: () => void;
-}) {
-
+}: RSVPOverlayProps) {
+  const { mutate, isLoading } = useRSVPMutation();
   const [rsvpName, setRsvpName] = useState<string>("");
   const [rsvpTelegram, setRsvpTelegram] = useState<string>("");
   const [rsvpEmail, setRsvpEmail] = useState<string>("");
 
   const handleSubmit: FormEventHandler = async (event) => {
     event.preventDefault();
+
+    mutate({
+      name: rsvpName,
+      telegram: rsvpTelegram,
+      email: rsvpEmail,
+      eventId,
+      uuid: undefined,
+    })
   };
 
   return (
     <Overlay onClose={onClose}>
       <Body>
-      <h1>RSVP</h1>
-      <StyledForm onSubmit={handleSubmit}>
-        <StyledLabel htmlFor="name">
-          Name
-        </StyledLabel>
-        <StyledInput
-          type="text"
-          id="name"
-          autoComplete="off"
-          value={rsvpName}
-          onChange={(e) => setRsvpName(e.target.value)}
-          required
-        />
-        <StyledLabel htmlFor="telegram">
-          Telegram handle
-        </StyledLabel>
-        <StyledInput
-          type="text"
-          id="telegram"
-          autoComplete="off"
-          value={rsvpTelegram}
-          onChange={(e) => setRsvpTelegram(e.target.value)}
-          required
-        />
-        <StyledLabel htmlFor="email">
-          Email address
-        </StyledLabel>
-        <StyledInput
-          type="text"
-          id="email"
-          autoComplete="off"
-          value={rsvpEmail}
-          onChange={(e) => setRsvpEmail(e.target.value)}
-          required
-        />
-        <SubmitRow>
-          <Button onClick={onClose}>I'm coming!</Button>
-        </SubmitRow>
-      </StyledForm>
+        <h1>RSVP</h1>
+        <StyledForm onSubmit={handleSubmit}>
+          <StyledLabel htmlFor="name">
+            Name
+          </StyledLabel>
+          <StyledInput
+            type="text"
+            id="name"
+            autoComplete="off"
+            value={rsvpName}
+            onChange={(e) => setRsvpName(e.target.value)}
+            required
+          />
+          <StyledLabel htmlFor="telegram">
+            Telegram handle
+          </StyledLabel>
+          <StyledInput
+            type="text"
+            id="telegram"
+            autoComplete="off"
+            value={rsvpTelegram}
+            onChange={(e) => setRsvpTelegram(e.target.value)}
+            required
+          />
+          <StyledLabel htmlFor="email">
+            Email address
+          </StyledLabel>
+          <StyledInput
+            type="text"
+            id="email"
+            autoComplete="off"
+            value={rsvpEmail}
+            onChange={(e) => setRsvpEmail(e.target.value)}
+            required
+          />
+          <SubmitRow>
+            <Button type={'submit'}
+              disabled={isLoading}>
+              {isLoading ? 'Submitting...' : `I'm coming!`}
+            </Button>
+          </SubmitRow>
+        </StyledForm>
       </Body>
     </Overlay>
   );
@@ -74,9 +90,10 @@ export type RSVPRequest = {
 };
 
 const Body = styled.div`
-  background: #eee;
+  background: #fff;
   border-radius: 16px;
   padding: 48px;
+  color: #000;
 `;
 
 const SubmitRow = styled.div`

@@ -12,6 +12,6 @@ const Header = () => {
 const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 1rem 1rem 0 4px;
+  padding: 1rem;
 `
 export default Header

@@ -9,9 +9,9 @@ import { useEvent } from '../../hooks/useEvent';
 
 export default function EventPage() {
   const router = useRouter()
-  const { id } = router.query
+  const eventId = router.query['id'] as string;
   const [rsvp, setRsvp] = useState<boolean | undefined>();
-  const { data: event, isLoading } = useEvent(id as string);
+  const { data: event, isLoading } = useEvent(eventId);
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -54,7 +54,9 @@ export default function EventPage() {
           </Button>
         </ButtonRow>
         {rsvp && (
-          <RSVPOverlay onClose={() => setRsvp(false)} />
+          <RSVPOverlay
+            eventId={eventId}
+            onClose={() => setRsvp(false)} />
         )}
       </Body>
       <br />
