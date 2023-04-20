@@ -58,7 +58,7 @@ export default function Page() {
     <Wrap>
       <ReferendumSection>
         <>
-        {accessToken ? (
+        {/* {accessToken ? (
           <LoggedInHeader>
             Zuzalu Party
             [link]Create Event
@@ -66,7 +66,7 @@ export default function Page() {
           </LoggedInHeader>
         ) : (
           <LoginScreen />
-        )}
+        )} */}
         {/* {group == SEMAPHORE_GROUP_URL && ( */ }
         <Button onClick={onCreate}>Create Event</Button>
         {createModal && (

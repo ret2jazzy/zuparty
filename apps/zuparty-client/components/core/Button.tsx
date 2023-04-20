@@ -9,6 +9,7 @@ export const Button = styled.button`
   opacity: 1;
   cursor: pointer;
   color: #26463F;
+  border-radius: 3rem;
 
   background-color: #F5D47F;
   transition: .2s

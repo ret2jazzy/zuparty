@@ -239,4 +239,5 @@ const Container = styled.div`
   margin: 10px;
   padding: 16px;
   margin-bottom: 32px;
+  color: #000;
 `;
