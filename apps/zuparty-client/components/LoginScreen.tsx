@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { SEMAPHORE_ADMIN_GROUP_URL, SEMAPHORE_GROUP_URL } from "../src/util";
+import { SEMAPHORE_GROUP_URL } from "../src/util";
 import { Login } from "./Login";
 
 export function LoginScreen({
