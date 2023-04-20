@@ -1,14 +1,10 @@
-import {Route, Switch} from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "../components/core/Button";
 import { CreatePoll } from "../components/CreatePoll";
 import { LoginScreen } from "../components/LoginScreen";
-import { EventPage } from "../components/EventPage";
 import { Polls } from "../components/Polls";
 import { ErrorOverlay, ZupollError } from "../components/shared/ErrorOverlay";
-import { SEMAPHORE_GROUP_URL } from "../src/util";
-import { create } from "domain";
 
 export default function Page() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -76,8 +72,6 @@ export default function Page() {
         {createModal && (
           <CreatePoll onCreated={setNewPoll} onError={onError} onClose={() => setCreateModal(false)}/>
         )}
-            <EventPage />
-
             <Polls
               accessToken={accessToken}
               newPoll={newPoll}

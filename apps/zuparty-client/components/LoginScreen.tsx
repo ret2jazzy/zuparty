@@ -37,19 +37,6 @@ const Description = styled.div`
   margin-top: -12px;
 `;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 16px 0;
-  padding: 0 16px 0 4px;
-`;
-
-const H1 = styled.h1`
-  color: #eee;
-  margin-top: 0;
-  font-size: 30px;
-`;
-
 const Body = styled.div`
   background: #eee;
   border-radius: 16px;
