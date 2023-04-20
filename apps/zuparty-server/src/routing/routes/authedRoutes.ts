@@ -44,6 +44,7 @@ export function initAuthedRoutes(
 }
 
 export interface LoginRequest {
-  semaphoreGroupUrl: string;
+  loginCommitment: string;
+  passuuid: string;
   proof: string;
 }
