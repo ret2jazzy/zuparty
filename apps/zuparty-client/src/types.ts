@@ -43,3 +43,24 @@ export type CreatePollRequest = {
   voterSemaphoreGroupUrls: string[];
   proof: string;
 };
+
+export type ZuEvent = {
+  id?: string;
+  createdAt?: string;
+  deadline?: string
+  name?: string;
+  description?: string;
+  spotsAvailable?: number;
+  spotsTaken?: number;
+  rsvps?: RSVP[]
+  userId?: string;
+}
+
+export type RSVP = {
+  id?: string;
+  uuid?: string;
+  name?: string;
+  telegram?: string;
+  email?: string;
+  eventId?: string;
+}

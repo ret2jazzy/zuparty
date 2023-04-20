@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { SEMAPHORE_ADMIN_GROUP_URL, SEMAPHORE_GROUP_URL } from "../src/util";
+import { SEMAPHORE_GROUP_URL } from "../src/util";
 import { Login } from "./Login";
 
 export function LoginScreen({
@@ -35,19 +35,6 @@ const Description = styled.div`
   font-size: 18px;
   margin-bottom: 48px;
   margin-top: -12px;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 16px 0;
-  padding: 0 16px 0 4px;
-`;
-
-const H1 = styled.h1`
-  color: #eee;
-  margin-top: 0;
-  font-size: 30px;
 `;
 
 const Body = styled.div`

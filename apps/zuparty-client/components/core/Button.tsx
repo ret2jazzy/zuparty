@@ -2,23 +2,27 @@ import styled from "styled-components";
 
 export const Button = styled.button`
   width: 100%;
-  padding: 8px 16px;
+  padding: 0.75rem 1.5rem;
   font-size: 18px;
   font-weight: bold;
-  margin: 0 0 5px 0;
   border: none;
-  border-radius: 8px;
   opacity: 1;
   cursor: pointer;
-  border: 1px solid #888;
+  color: #26463F;
 
-  background-color: #fff;
+  background-color: #F5D47F;
+  transition: .2s
 
   &:hover {
-    background-color: #f8f8f8;
+    background-color: #f1d99b;
   }
 
   &:active {
-    background-color: #f3f3f3;
+    background-color: #f1d99b;
+  }
+  
+  &:disabled {
+    background-color: grey;
+    color: #000;
   }
 `;
