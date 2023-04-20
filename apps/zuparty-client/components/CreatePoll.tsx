@@ -8,6 +8,7 @@ import stableStringify from "json-stable-stringify";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { createPoll } from "../src/api";
+import { Overlay } from "./shared/Overlay";
 import {
   CreatePollRequest,
   PollSignal,
@@ -31,9 +32,11 @@ enum CreatePollState {
 export function CreatePoll({
   onCreated,
   onError,
+  onClose,
 }: {
   onCreated: (newPoll: string) => void;
   onError: (err: ZupollError) => void;
+  onClose: () => void;
 }) {
   const createState = useRef<CreatePollState>(CreatePollState.DEFAULT);
   const [pollBody, setPollBody] = useState<string>("");
@@ -92,6 +95,15 @@ export function CreatePoll({
     createState.current = CreatePollState.AWAITING_PCDSTR;
 
     const signal: PollSignal = {
+      /*
+      name: string,
+      description: string;
+      spotsAvailable: number;
+      hostuuid: string;
+      hostCommitment: string;
+      expiry: Date;
+      */
+
       pollType: PollType.REFERENDUM,
       body: pollBody,
       expiry: pollExpiry,
@@ -118,47 +130,71 @@ export function CreatePoll({
   }
 
   return (
-    <Container>
+    <Overlay onClose={onClose}>
+      <Container>
       {/* <Header>Admin Create Poll</Header> */}
       <StyledForm onSubmit={handleSubmit}>
-        <StyledLabel htmlFor="body">
-          Question&nbsp;
-          <StyledInput
-            type="text"
-            id="body"
-            autoComplete="off"
-            value={pollBody}
-            onChange={(e) => setPollBody(e.target.value)}
-            required
-          />
+        <StyledLabel htmlFor="eventTitle">
+          Event title
         </StyledLabel>
-        <StyledLabel htmlFor="options">
-          Options (comma-seperated)&nbsp;
-          <StyledInput
-            type="text"
-            autoComplete="off"
-            id="options"
-            value={pollOptions.join(",")}
-            onChange={(e) => setPollOptions(e.target.value.split(","))}
-            required
-          />
+        <StyledInput
+          type="text"
+          id="eventTitle"
+          autoComplete="off"
+          value={pollBody}
+          onChange={(e) => setPollBody(e.target.value)}
+          required
+        />
+        <StyledLabel htmlFor="eventTitle">
+          Event description
         </StyledLabel>
+        <StyledInput
+          type="text"
+          id="eventDescription"
+          autoComplete="off"
+          value={pollBody}
+          onChange={(e) => setPollBody(e.target.value)}
+          required
+        />
+        <StyledLabel htmlFor="eventTitle">
+          Location
+        </StyledLabel>
+        <StyledInput
+          type="text"
+          id="eventLocation"
+          autoComplete="off"
+          value={pollBody}
+          onChange={(e) => setPollBody(e.target.value)}
+          required
+        />
+        <StyledLabel htmlFor="eventTitle">
+          Capacity
+        </StyledLabel>
+        <StyledInput
+          type="number"
+          id="eventCapacity"
+          autoComplete="off"
+          value={pollBody}
+          onChange={(e) => setPollBody(e.target.value)}
+          required
+        />
         <StyledLabel htmlFor="expiry">
-          Expiry&nbsp;
-          <StyledInput
-            type="datetime-local"
-            autoComplete="off"
-            id="expiry"
-            value={getDateString(pollExpiry)}
-            onChange={(e) => setPollExpiry(new Date(e.target.value))}
-            required
-          />
+          Start time
         </StyledLabel>
+        <StyledInput
+          type="datetime-local"
+          autoComplete="off"
+          id="eventStart"
+          value={getDateString(pollExpiry)}
+          onChange={(e) => setPollExpiry(new Date(e.target.value))}
+          required
+        />
         <SubmitRow>
-          <Button type="submit">Create Poll</Button>
+          <Button type="submit">Create Event</Button>
         </SubmitRow>
       </StyledForm>
-    </Container>
+      </Container>
+    </Overlay>
   );
 }
 
@@ -176,30 +212,29 @@ const StyledForm = styled.form`
 `;
 
 const StyledInput = styled.input`
+  display: flex;
   padding: 4px 8px;
   border-radius: 4px;
-  margin-left: 5px;
   border: none;
   border: 1px solid #555;
-  width: 50%;
+  width: 100%;
+  margin-bottom: 16px;
 `;
 
 const StyledLabel = styled.label`
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-size: 16px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   width: 100%;
-  text-align: right;
+  text-align: left;
 `;
 
 const Container = styled.div`
   box-sizing: border-box;
   font-family: system-ui, sans-serif;
   border: 1px solid #bbb;
-  background-color: #fcfcfc;
-  border-radius: 4px;
+  background: #eee;
+  border-radius: 16px;
   width: 100%;
   margin: 10px;
   padding: 16px;

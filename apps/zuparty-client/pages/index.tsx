@@ -7,13 +7,15 @@ import { LoginScreen } from "../components/LoginScreen";
 import { EventPage } from "../components/EventPage";
 import { Polls } from "../components/Polls";
 import { ErrorOverlay, ZupollError } from "../components/shared/ErrorOverlay";
-import { SEMAPHORE_ADMIN_GROUP_URL } from "../src/util";
+import { SEMAPHORE_GROUP_URL } from "../src/util";
+import { create } from "domain";
 
 export default function Page() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [group, setGroup] = useState<string | null>(null);
   const [newPoll, setNewPoll] = useState<string | undefined>();
   const [error, setError] = useState<ZupollError>();
+  const [createModal, setCreateModal] = useState<boolean | undefined>();
 
   function parseJwt(token: string) {
     const base64Url = token.split(".")[1];
@@ -48,6 +50,10 @@ export default function Page() {
     }
   };
 
+  const onCreate = () => {
+    setCreateModal(!createModal);
+  }
+
   const onError = useCallback((err: ZupollError) => setError(err), []);
 
   const Wrap = accessToken ? Wrapper : WrapDark;
@@ -55,16 +61,22 @@ export default function Page() {
   return (
     <Wrap>
       <ReferendumSection>
+        <>
         {accessToken ? (
-          <>
-            <LoggedInHeader>
-              Zuzalu Events
-              [link]Create Event
-              <Button onClick={logout}>Logout</Button>
-            </LoggedInHeader>
-            {group == SEMAPHORE_ADMIN_GROUP_URL && (
-              <CreatePoll onCreated={setNewPoll} onError={onError} />
-            )}
+          <LoggedInHeader>
+            Zuzalu Party
+            [link]Create Event
+            <Button onClick={logout}>Logout</Button>
+          </LoggedInHeader>
+        ) : (
+          <LoginScreen />
+        )}
+        {/* {group == SEMAPHORE_GROUP_URL && ( */ }
+        <Button onClick={onCreate}>Create Event</Button>
+        {createModal && (
+          <CreatePoll onCreated={setNewPoll} onError={onError} onClose={() => setCreateModal(false)}/>
+        )}
+            <EventPage />
 
             <Polls
               accessToken={accessToken}
@@ -75,10 +87,7 @@ export default function Page() {
             {error && (
               <ErrorOverlay error={error} onClose={() => setError(undefined)} />
             )}
-          </>
-        ) : (
-          <EventPage />
-        )}
+        </>
       </ReferendumSection>
     </Wrap>
   );
