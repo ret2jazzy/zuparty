@@ -14,7 +14,7 @@ export const useEvent = <TData extends ZuEvent>(id: string,
     queryKey: key as QueryKey,
     enabled: id !== undefined,
     queryFn: async ({ queryKey }) => {
-      return await fetcher(`/${queryKey.join('/')}`)
+      return (await fetcher(`/${queryKey.join('/')}`))?.event
     },
   })
 }
