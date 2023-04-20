@@ -8,6 +8,6 @@ export function initHealthcheckRoutes(
   console.log("[INIT] Initializing health check routes");
 
   app.get("/", async (req: Request, res: Response) => {
-    res.send("PCD-Consuming Application - OK!");
+    res.send("Zuzalu running - OK!");
   });
 }

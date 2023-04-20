@@ -1,9 +1,9 @@
-import { PollType, UserType } from "@prisma/client";
+// import { PollType, UserType } from "@prisma/client";
 import express, { NextFunction, Request, Response } from "express";
 import { sha256 } from "js-sha256";
 import stableStringify from "json-stable-stringify";
 import { ApplicationContext } from "../../types";
-import { SEMAPHORE_ADMIN_GROUP_URL } from "../../util/auth";
+import { SEMAPHORE_ADMIN_GROUP_URL, SEMAPHORE_GROUP_URL } from "../../util/auth";
 import { prisma } from "../../util/prisma";
 import { fetchAndVerifyName } from "../../util/util";
 import { verifyGroupProof, verifySignatureProof } from "../../util/verify";
@@ -18,14 +18,29 @@ export function initPCDRoutes(
   _context: ApplicationContext
 ): void {
 
+  app.get("/event/:eventId", async (req: Request, res: Response, next: NextFunction) => {
+    let uuid = req.params.eventId; 
+
+    let curEvent = prisma.event.findUnique({
+      where:{
+        id: uuid
+      }
+    })
+    res.json({
+      event: curEvent
+    });
+
+  })
+
   app.post("/rsvp", async (req: Request, res: Response, next: NextFunction) => {
     //To RSVP, no zk needed
     const request = req.body as RSVPRequest;
 
     const rsvpEmail = request.email;
-    let found = prisma.rsvp.findUnique({
+    let found = prisma.rSVP.findFirst({
       where:{
-        email: rsvpEmail
+        email: rsvpEmail,
+        eventId: request.eventId,
       }
     });
 
@@ -33,11 +48,11 @@ export function initPCDRoutes(
       throw new Error("User already RSVP-ed");
     }
 
-    prisma.rsvp.create({
+    await prisma.rSVP.create({
       data:{
         name: request.name,
         telegram: request.telegram,
-        email: request.telegram,
+        email: request.email,
         eventId: request.eventId,
       }
     })
@@ -50,24 +65,31 @@ export function initPCDRoutes(
     const signal : CreateEventSignal = {
       name: request.name,
       description: request.description,
-    }
+      expiry: request.expiry,
+    };
 
     const signalHash = sha256(stableStringify(signal));
 
-    // const nullifier = await verifyGroupProof(
-    //   "URL_PLACEHOLDER",
-    //   request.proof
-    // );
-    //add zk later
+    const nullifier = await verifyGroupProof(
+      SEMAPHORE_GROUP_URL!, 
+      request.proof,
+      {
+        signal: signalHash,
+        allowedGroups: [SEMAPHORE_GROUP_URL!],
+        claimedExtNullifier: signalHash
+      }
+      );
 
-    prisma.event.create({
+    let createdEvent = await prisma.event.create({
       data:{
         name: request.name,
         description: request.description,
-        deadline: request.expiry
+        deadline: request.expiry,
+        spotsAvailable: request.spotsAvailable,
       }
     })
 
+    res.json({eventId: createdEvent.id});
   });
   
 }
@@ -87,49 +109,11 @@ export type CreateEventRequest = {
   hostuuid: string;
   hostCommitment: string;
   expiry: Date;
+  proof: string
 };
 
 export type CreateEventSignal = {
   name: string,
-  description: string
-};
-
-export type VoteRequest = {
-  pollId: string;
-  voterType: UserType;
-  voterSemaphoreGroupUrl: string | undefined;
-  voterCommitment: string | undefined;
-  voterUuid: string | undefined;
-  voteIdx: number;
-  proof: string;
-};
-
-
-
-
-export type VoteSignal = {
-  pollId: string;
-  voteIdx: number;
-};
-
-export type CreatePollRequest = {
-  pollsterType: UserType;
-  pollsterSemaphoreGroupUrl: string | undefined;
-  pollsterCommitment: string | undefined;
-  pollsterUuid: string | undefined;
-  pollType: PollType;
-  body: string;
-  expiry: Date;
-  options: string[];
-  voterSemaphoreGroupUrls: string[];
-  proof: string;
-};
-
-export type PollSignal = {
-  // nullifier: string;
-  pollType: PollType;
-  body: string;
-  expiry: Date;
-  options: string[];
-  voterSemaphoreGroupUrls: string[];
+  description: string,
+  expiry: Date,
 };

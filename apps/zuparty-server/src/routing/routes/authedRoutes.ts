@@ -9,38 +9,38 @@ export function initAuthedRoutes(
   app: express.Application,
   _context: ApplicationContext
 ): void {
-  app.post(
-    "/login",
-    async (req: Request, res: Response, next: NextFunction) => {
-      const request = req.body as LoginRequest;
+  // app.post(
+  //   "/login",
+  //   async (req: Request, res: Response, next: NextFunction) => {
+  //     const request = req.body as LoginRequest;
 
-      try {
-        await verifyGroupProof(request.semaphoreGroupUrl, request.proof, {});
+  //     try {
+  //       await verifyGroupProof(request.semaphoreGroupUrl, request.proof, {});
 
-        const accessToken = sign(
-          { groupUrl: request.semaphoreGroupUrl },
-          ACCESS_TOKEN_SECRET!
-        );
+  //       const accessToken = sign(
+  //         { groupUrl: request.semaphoreGroupUrl },
+  //         ACCESS_TOKEN_SECRET!
+  //       );
 
-        res.status(200).json({ accessToken });
-      } catch (e) {
-        console.error(e);
-        next(e);
-      }
-    }
-  );
+  //       res.status(200).json({ accessToken });
+  //     } catch (e) {
+  //       console.error(e);
+  //       next(e);
+  //     }
+  //   }
+  // );
 
-  app.get("/polls", authenticateJWT, async (req: Request, res: Response) => {
-    // TODO: do we need pagination
+  // app.get("/polls", authenticateJWT, async (req: Request, res: Response) => {
+  //   // TODO: do we need pagination
 
-    const polls = await prisma.poll.findMany({
-      include: {
-        votes: true,
-      },
-      orderBy: { expiry: "asc" },
-    });
-    res.status(200).json({ polls });
-  });
+  //   const polls = await prisma.poll.findMany({
+  //     include: {
+  //       votes: true,
+  //     },
+  //     orderBy: { expiry: "asc" },
+  //   });
+  //   res.status(200).json({ polls });
+  // });
 }
 
 export interface LoginRequest {

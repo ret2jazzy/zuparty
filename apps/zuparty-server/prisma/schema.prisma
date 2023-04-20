@@ -16,8 +16,7 @@ datasource db {
 //    from the verified PCD and then we check that it is part of a valid group.
 
 model Event {
-    id          String   @id
-    host        User     @relation(fields: [userId], references: [id])
+    id          String   @id @default(uuid())
     createdAt   DateTime @default(now())
     deadline    DateTime
     name String
@@ -25,19 +24,10 @@ model Event {
     spotsAvailable Int
     spotsTaken Int @default(0)
     rsvps       RSVP[]
-    userId      String
-}
-
-model User {
-    id    String  @id
-    uuid  String
-    name  String
-    email String
-    Event Event[]
 }
 
 model RSVP {
-    id       String  @id
+    id       String  @id @default(uuid())
     uuid     String?
     name     String
     telegram String
