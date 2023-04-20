@@ -58,7 +58,7 @@ export default function Page() {
     <Wrap>
       <ReferendumSection>
         <>
-        {/* {accessToken ? (
+          {/* {accessToken ? (
           <LoggedInHeader>
             Zuzalu Party
             [link]Create Event
@@ -67,20 +67,25 @@ export default function Page() {
         ) : (
           <LoginScreen />
         )} */}
-        {/* {group == SEMAPHORE_GROUP_URL && ( */ }
-        <Button onClick={onCreate}>Create Event</Button>
-        {createModal && (
-          <CreatePoll onCreated={setNewPoll} onError={onError} onClose={() => setCreateModal(false)}/>
-        )}
-            <Polls
-              accessToken={accessToken}
-              newPoll={newPoll}
-              onError={onError}
-            />
+          {/* {group == SEMAPHORE_GROUP_URL && ( */}
 
-            {error && (
-              <ErrorOverlay error={error} onClose={() => setError(undefined)} />
-            )}
+          <img src="/images/zuparty-logo_image.png" alt="Zuzalu" width="240" height="237" />
+          <img src="/images/zuparty-logo_text.png" alt="Zuzalu" width="238" height="88" />
+          <PartyTitle>Parties by Zuzalians, for Zuzalians</PartyTitle>
+          <br />
+          <Button onClick={onCreate}>Create Event</Button>
+          {createModal && (
+            <CreatePoll onCreated={setNewPoll} onError={onError} onClose={() => setCreateModal(false)} />
+          )}
+          <Polls
+            accessToken={accessToken}
+            newPoll={newPoll}
+            onError={onError}
+          />
+
+          {error && (
+            <ErrorOverlay error={error} onClose={() => setError(undefined)} />
+          )}
         </>
       </ReferendumSection>
     </Wrap>
@@ -96,6 +101,11 @@ const LoggedInHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
+`;
+
+const PartyTitle = styled.p`
+  font-size: 1.5rem;
+  text-align: center;
 `;
 
 const Wrapper = styled.div`
