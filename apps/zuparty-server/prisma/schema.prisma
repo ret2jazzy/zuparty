@@ -18,10 +18,11 @@ datasource db {
 model Event {
     id          String   @id @default(uuid())
     createdAt   DateTime @default(now())
-    deadline    DateTime
+    expiry    DateTime
     name String
     description String
     spotsAvailable Int
+    nullifier String @unique 
     spotsTaken Int @default(0)
     rsvps       RSVP[]
 }

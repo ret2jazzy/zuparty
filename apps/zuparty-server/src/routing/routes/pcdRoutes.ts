@@ -1,5 +1,6 @@
 // import { PollType, UserType } from "@prisma/client";
 import express, { NextFunction, Request, Response } from "express";
+import {v4 as uuidv4} from 'uuid';
 import { sha256 } from "js-sha256";
 import stableStringify from "json-stable-stringify";
 import { ApplicationContext } from "../../types";
@@ -21,48 +22,99 @@ export function initPCDRoutes(
   app.get("/event/:eventId", async (req: Request, res: Response, next: NextFunction) => {
     let uuid = req.params.eventId; 
 
-    let curEvent = prisma.event.findUnique({
+    let curEvent = await prisma.event.findUnique({
       where:{
         id: uuid
       }
     })
+
     res.json({
       event: curEvent
     });
 
   })
 
-  app.post("/rsvp", async (req: Request, res: Response, next: NextFunction) => {
-    //To RSVP, no zk needed
-    const request = req.body as RSVPRequest;
+// you can see RSVPs but only if you're owner
+  app.post("/rsvps/:eventId", async (req: Request, res: Response, next: NextFunction) => {
+    let uuid = req.params.eventId; 
 
-    const rsvpEmail = request.email;
-    let found = prisma.rSVP.findFirst({
+    let curEvent = await prisma.event.findUnique({
       where:{
-        email: rsvpEmail,
-        eventId: request.eventId,
+        id: uuid
+      },
+      include: {
+        rsvps: true,
       }
     });
 
-    if (found !== null){
-      throw new Error("User already RSVP-ed");
+    if(curEvent === null){
+      res.status(404).json({"data": 404})
+      return;
     }
 
-    await prisma.rSVP.create({
-      data:{
-        name: request.name,
-        telegram: request.telegram,
-        email: request.email,
-        eventId: request.eventId,
+    const signal: EventSignal = {
+      name: curEvent.name,
+      description: curEvent.description,
+      expiry: curEvent.expiry,
+    }
+
+    const signalHash = sha256(stableStringify(signal));
+
+    const nullifier = await verifyGroupProof(
+      SEMAPHORE_GROUP_URL!, 
+      req.body.proof as string,
+      {
+        signal: signalHash,
+        allowedGroups: [SEMAPHORE_GROUP_URL!],
+        claimedExtNullifier: signalHash
       }
-    })
-    res.send("RSVP-ed");
+      );
+
+      if(curEvent.nullifier !== nullifier){
+        res.status(404).json({"data":404})
+        return;
+      }
+
+      res.json(curEvent.rsvps);
+
+  });
+
+  app.post("/rsvp", async (req: Request, res: Response, next: NextFunction) => {
+    //To RSVP, no zk needed
+    try{
+      const request = req.body as RSVPRequest;
+
+      const rsvpEmail = request.email;
+      let found = await prisma.rSVP.findFirst({
+        where:{
+          email: rsvpEmail,
+          eventId: request.eventId,
+        }
+      });
+
+      if (found !== null){
+        throw new Error("User already RSVP-ed");
+      }
+
+      await prisma.rSVP.create({
+        data:{
+          name: request.name,
+          telegram: request.telegram,
+          email: request.email,
+          eventId: request.eventId,
+        }
+      })
+      res.json({rsvp: 200});
+  }catch (e){
+    console.log("ERROR");
+    next(e);
+  }
 
   });
   app.post("/create-event", async (req: Request, res: Response, next: NextFunction) => {
     const request = req.body as CreateEventRequest;
     
-    const signal : CreateEventSignal = {
+    const signal : EventSignal = {
       name: request.name,
       description: request.description,
       expiry: request.expiry,
@@ -84,8 +136,9 @@ export function initPCDRoutes(
       data:{
         name: request.name,
         description: request.description,
-        deadline: request.expiry,
+        expiry: request.expiry,
         spotsAvailable: request.spotsAvailable,
+        nullifier: nullifier,
       }
     })
 
@@ -112,7 +165,7 @@ export type CreateEventRequest = {
   proof: string
 };
 
-export type CreateEventSignal = {
+export type EventSignal = {
   name: string,
   description: string,
   expiry: Date,
