@@ -56,7 +56,6 @@ export async function login(
 export async function listPolls(
   accessToken: string | null
 ): Promise<any> {
-  if (!accessToken) return null;
 
   // const query = new URLSearchParams({
   //   page: page.toString(),

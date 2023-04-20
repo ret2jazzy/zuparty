@@ -9,36 +9,17 @@ export function LoginScreen({
 }) {
   return (
     <Bg>
-      <Header>
-        <img src="/zuparty-logo.png" alt="Zuzalu" width="160" height="42" />
-        <H1>Polling</H1>
-      </Header>
       <Body>
         <Description>
           <p>
-            <strong>This app lets Zuzalu vote anonymously.</strong>
-          </p>
-          <p>
-            The server never learns who you are. The Zuzalu Passport creates a
-            zero-knowledge proof that you're a participant without revealing
-            which one.
-          </p>
-          <p>
-            You can also log in as an organizer, letting you create your own
-            polls.
+            <strong>This app lets anyone with a Zuzalu passport host events.</strong>
           </p>
         </Description>
         <LoginRow>
           <Login
             onLoggedIn={updateAccessToken}
             requestedGroup={SEMAPHORE_GROUP_URL}
-            prompt="Log in to vote"
-          />
-          <Login
-            onLoggedIn={updateAccessToken}
-            requestedGroup={SEMAPHORE_ADMIN_GROUP_URL}
-            prompt="Log in as an organizer"
-            deemphasized
+            prompt="Log in"
           />
         </LoginRow>
       </Body>
