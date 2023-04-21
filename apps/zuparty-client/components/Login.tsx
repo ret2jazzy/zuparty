@@ -28,13 +28,9 @@ export function Login({
   deemphasized?: boolean;
 }) {
   const [error, setError] = useState<ZupollError>();
-  const [loggingIn, setLoggingIn] = useState(false);
-
   const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
 
   useEffect(() => {
-    if (!loggingIn) return;
-
     if (!pcdStr) return;
 
     const sendLogin = async () => {
@@ -47,7 +43,6 @@ export function Login({
           message: "Fail to connect to the server, please try again later.",
         } as ZupollError;
         setError(err);
-        setLoggingIn(false);
         return;
       }
       const token = await res.json();
@@ -55,10 +50,9 @@ export function Login({
     };
 
     sendLogin().then((accessToken) => {
-      setLoggingIn(false);
       onLoggedIn(accessToken, requestedGroup);
     });
-  }, [pcdStr, loggingIn, requestedGroup, onLoggedIn]);
+  }, [pcdStr, requestedGroup, onLoggedIn]);
 
   const ButtonComponent = deemphasized ? DeemphasizedLoginButton : Button;
 
@@ -66,7 +60,6 @@ export function Login({
     <>
       <ButtonComponent
         onClick={() => {
-          setLoggingIn(true);
           openZuzaluMembershipPopup(
             PASSPORT_URL,
             window.location.origin + "/popup",
@@ -74,7 +67,6 @@ export function Login({
             "zupoll"
           );
         }}
-        disabled={loggingIn}
       >
         {prompt}
       </ButtonComponent>

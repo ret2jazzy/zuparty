@@ -1,7 +1,7 @@
-import { useMutation } from "react-query"
+import { useMutation, UseMutationOptions } from "react-query"
 import { fetcher } from "../utils/fetcher";
 
-export const useRSVPMutation = () => {
+export const useRSVPMutation = (options?: Omit<UseMutationOptions<unknown, any, RSVPRequest, any>, 'mutationFn'>) => {
   return useMutation(
     (data: RSVPRequest) => {
       return fetcher('/rsvp', {
@@ -12,7 +12,8 @@ export const useRSVPMutation = () => {
         },
         body: JSON.stringify(data)
       });
-    }
+    },
+    options
   )
 }
 

@@ -13,7 +13,8 @@ import { SEMAPHORE_GROUP_URL } from '../../src/util';
 export default function EventPage() {
   const router = useRouter()
   const eventId = router.query['id'] as string;
-  const [rsvp, setRsvp] = useState<boolean | undefined>();
+  const [showRsvp, setShowRsvp] = useState(false);
+  const [hasRsvp, setHasRsvp] = useState(false);
   const [showLocation, setShowLocation] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string | undefined | null>();
   const { data: event, isLoading } = useEvent(eventId);
@@ -55,36 +56,44 @@ export default function EventPage() {
             </p>
           }
         </Description>
-        <Description>
-          { /* make these parts only show up when confirmed RSVP*/}
-          {eventLocation ?
-            <p>{eventLocation}</p>
-            :
-            accessToken ?
-              <Button onClick={handleViewLocation} style={{ width: 300 }}>
-                View location
-              </Button> :
-              <Login
-                onLoggedIn={updateAccessToken}
-                requestedGroup={SEMAPHORE_GROUP_URL}
-                prompt='Login to view location'
-              />
+        {hasRsvp &&
+          <Description>
+            { /* make these parts only show up when confirmed RSVP*/}
+            {eventLocation ?
+              <p>{eventLocation}</p>
+              :
+              accessToken ?
+                <Button onClick={handleViewLocation} style={{ width: 300 }}>
+                  View location
+                </Button> :
+                <Login
+                  onLoggedIn={updateAccessToken}
+                  requestedGroup={SEMAPHORE_GROUP_URL}
+                  prompt='Login to view location'
+                />
 
-          }
-        </Description>
+            }
+          </Description>
+        }
         <Description>
           <h6>Description:</h6>
           <p>{event.description}</p>
         </Description>
-        <ButtonRow>
-          <Button onClick={() => setRsvp(true)}>
-            RSVP to see details
-          </Button>
-        </ButtonRow>
-        {rsvp && (
+        {!hasRsvp &&
+          <ButtonRow>
+            <Button onClick={() => setShowRsvp(true)}>
+              RSVP to see details
+            </Button>
+          </ButtonRow>
+        }
+        {showRsvp && (
           <RSVPOverlay
             eventId={eventId}
-            onClose={() => setRsvp(false)} />
+            onClose={() => setShowRsvp(false)}
+            onSuccess={() => {
+              setShowRsvp(false);
+              setHasRsvp(true)
+            }} />
         )}
       </Body>
     </Container >

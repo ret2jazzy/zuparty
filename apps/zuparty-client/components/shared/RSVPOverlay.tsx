@@ -8,13 +8,19 @@ import { useRSVPMutation } from "../../hooks/useRSVPMutation";
 type RSVPOverlayProps = {
   eventId: string;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
 export function RSVPOverlay({
   eventId,
   onClose,
+  onSuccess,
 }: RSVPOverlayProps) {
-  const { mutate, isLoading } = useRSVPMutation();
+  const { mutate, isLoading } = useRSVPMutation({
+    onSuccess: () => {
+      onSuccess()
+    }
+  });
   const [rsvpName, setRsvpName] = useState<string>("");
   const [rsvpTelegram, setRsvpTelegram] = useState<string>("");
   const [rsvpEmail, setRsvpEmail] = useState<string>("");

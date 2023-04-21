@@ -3,7 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "../components/core/Button";
 import { CreatePoll } from "../components/CreatePoll";
+import EventListItem from "../components/EventListItem";
+import { Login } from "../components/Login";
+import { LoginScreen } from "../components/LoginScreen";
 import { ErrorOverlay, ZupollError } from "../components/shared/ErrorOverlay";
+import { useEvents } from "../hooks/useEvents";
 
 export default function Page() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -11,6 +15,7 @@ export default function Page() {
   const [error, setError] = useState<ZupollError>();
   const [createModal, setCreateModal] = useState<boolean | undefined>();
   const router = useRouter();
+  const { data: events, isLoading } = useEvents(accessToken);
 
   function parseJwt(token: string) {
     const base64Url = token.split(".")[1];
@@ -57,6 +62,23 @@ export default function Page() {
     router.push(`/event/${eventId}`)
   }
 
+  const renderEvents = () => {
+    if (!accessToken) return null;
+    return <>
+      <h3>
+        Your events:
+      </h3>
+      <br />
+      {!isLoading && (!events || events?.length === 0) ?
+        <p>You have no events created.</p>
+        :
+        events?.map(event => (
+          <EventListItem
+            key={event.id}
+            event={event} />
+        ))}
+    </>
+  }
   return (
     <Wrap>
       <ReferendumSection>
@@ -76,7 +98,11 @@ export default function Page() {
           <img src="/images/zuparty-logo_text.png" alt="Zuzalu" width="238" height="88" />
           <PartyTitle>Parties by Zuzalians, for Zuzalians</PartyTitle>
           <br />
-          <Button onClick={onCreate}>Create Event</Button>
+          {accessToken ?
+
+            <Button onClick={onCreate}>Create Event</Button> :
+            <LoginScreen updateAccessToken={updateAccessToken} />
+          }
           {createModal && (
             <CreatePoll onCreated={handleNewEvent} onError={onError} onClose={() => setCreateModal(false)} />
           )}
@@ -89,6 +115,8 @@ export default function Page() {
           {error && (
             <ErrorOverlay error={error} onClose={() => setError(undefined)} />
           )}
+          <br />
+          {renderEvents()}
         </>
       </ReferendumSection>
     </Wrap>

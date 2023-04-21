@@ -38,7 +38,6 @@ const Description = styled.div`
 `;
 
 const Body = styled.div`
-  background: #eee;
   border-radius: 16px;
   padding: 48px;
 `;
