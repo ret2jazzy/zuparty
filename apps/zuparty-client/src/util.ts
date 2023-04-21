@@ -4,7 +4,7 @@ export const PASSPORT_URL = "https://zupass.org/";
 
 export const PASSPORT_SERVER_URL = "https://api.pcd-passport.com/";
 
-export const ZUPOLL_SERVER_URL = "https://zupoll-server.onrender.com/";
+export const ZUPARTY_SERVER_URL = "http://zuzalu.party:3005/";
 
 export const SEMAPHORE_GROUP_URL = "https://api.pcd-passport.com/semaphore/1";
 

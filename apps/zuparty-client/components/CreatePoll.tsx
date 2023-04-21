@@ -43,7 +43,7 @@ export function CreatePoll({
   const [partyName, setPartyName] = useState<string>("");
   const [partyDescription, setPartyDescription] = useState<string>("");
   const [partyLocation, setPartyLocation] = useState<string>("");
-  const [partyCapacity, setPartyCapacity] = useState<string>("");
+  const [partyCapacity, setPartyCapacity] = useState<number>(0);
   const [partyExpiry, setPartyExpiry] = useState<Date>(
     new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
   );
@@ -95,18 +95,10 @@ export function CreatePoll({
     createState.current = CreatePollState.AWAITING_PCDSTR;
 
     const signal: EventSignal = {
-      /*
-      name: string,
-      description: string;
-      spotsAvailable: number;
-      hostuuid: string;
-      hostCommitment: string;
-      expiry: Date;
-      */
-        name: partyName,
-        description: partyDescription,
-        expiry: partyExpiry,
-      
+      name: partyName,
+      description: partyDescription,
+      expiry: partyExpiry,
+
     };
     const signalHash = sha256(stableStringify(signal));
     const sigHashEnc = generateMessageHash(signalHash).toString();
@@ -130,67 +122,67 @@ export function CreatePoll({
   return (
     <Overlay onClose={onClose}>
       <Container>
-      {/* <Header>Admin Create Poll</Header> */}
-      <StyledForm onSubmit={handleSubmit}>
-        <StyledLabel htmlFor="eventTitle">
-          Event title
-        </StyledLabel>
-        <StyledInput
-          type="text"
-          id="eventTitle"
-          autoComplete="off"
-          value={partyName}
-          onChange={(e) => setPartyName(e.target.value)}
-          required
-        />
-        <StyledLabel htmlFor="eventTitle">
-          Event description
-        </StyledLabel>
-        <StyledInput
-          type="text"
-          id="eventDescription"
-          autoComplete="off"
-          value={partyDescription}
-          onChange={(e) => setPartyDescription(e.target.value)}
-          required
-        />
-        <StyledLabel htmlFor="eventTitle">
-          Location
-        </StyledLabel>
-        <StyledInput
-          type="text"
-          id="eventLocation"
-          autoComplete="off"
-          value={partyLocation}
-          onChange={(e) => setPartyLocation(e.target.value)}
-          required
-        />
-        <StyledLabel htmlFor="eventTitle">
-          Capacity
-        </StyledLabel>
-        <StyledInput
-          type="number"
-          id="eventCapacity"
-          autoComplete="off"
-          value={partyCapacity}
-          onChange={(e) => setPartyCapacity(e.target.value)}
-          required
-        />
-        <StyledLabel htmlFor="expiry">
-          Start time
-        </StyledLabel>
-        <StyledInput
-          type="datetime-local"
-          autoComplete="off"
-          id="eventStart"
-          value={getDateString(partyExpiry)}
-          onChange={(e) => setPartyExpiry(new Date(e.target.value))}
-          required
-        />
-        <SubmitRow>
-          <Button type="submit">Create Event</Button>
-        </SubmitRow>
-      </StyledForm>
+        {/* <Header>Admin Create Poll</Header> */}
+        <StyledForm onSubmit={handleSubmit}>
+          <StyledLabel htmlFor="eventTitle">
+            Event title
+          </StyledLabel>
+          <StyledInput
+            type="text"
+            id="eventTitle"
+            autoComplete="off"
+            value={partyName}
+            onChange={(e) => setPartyName(e.target.value)}
+            required
+          />
+          <StyledLabel htmlFor="eventTitle">
+            Event description
+          </StyledLabel>
+          <StyledInput
+            type="text"
+            id="eventDescription"
+            autoComplete="off"
+            value={partyDescription}
+            onChange={(e) => setPartyDescription(e.target.value)}
+            required
+          />
+          <StyledLabel htmlFor="eventTitle">
+            Location
+          </StyledLabel>
+          <StyledInput
+            type="text"
+            id="eventLocation"
+            autoComplete="off"
+            value={partyLocation}
+            onChange={(e) => setPartyLocation(e.target.value)}
+            required
+          />
+          <StyledLabel htmlFor="eventTitle">
+            Capacity
+          </StyledLabel>
+          <StyledInput
+            type="number"
+            id="eventCapacity"
+            autoComplete="off"
+            value={partyCapacity}
+            onChange={(e) => setPartyCapacity(e.target.value)}
+            required
+          />
+          <StyledLabel htmlFor="expiry">
+            Start time
+          </StyledLabel>
+          <StyledInput
+            type="datetime-local"
+            autoComplete="off"
+            id="eventStart"
+            value={getDateString(partyExpiry)}
+            onChange={(e) => setPartyExpiry(new Date(e.target.value))}
+            required
+          />
+          <SubmitRow>
+            <Button type="submit">Create Event</Button>
+          </SubmitRow>
+        </StyledForm>
       </Container>
     </Overlay>
   );

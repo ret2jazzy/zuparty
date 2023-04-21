@@ -6,15 +6,11 @@ export const ACCESS_TOKEN_SECRET = IS_PROD
   ? process.env.ACCESS_TOKEN_SECRET
   : "secret";
 
-export const SEMAPHORE_GROUP_URL = IS_PROD
-  ? process.env.SEMAPHORE_GROUP_URL
-  : "http://localhost:3002/semaphore/1";
+export const SEMAPHORE_GROUP_URL = process.env.SEMAPHORE_GROUP_URL
 
-export const SEMAPHORE_ADMIN_GROUP_URL = IS_PROD
-  ? process.env.SEMAPHORE_ADMIN_GROUP_URL
-  : "http://localhost:3002/semaphore/4";
+export const SEMAPHORE_ADMIN_GROUP_URL = "http://localhost:3002/semaphore/4";
   
-export const PASSPORT_SERVER = IS_PROD ? process.env.PASSPORT_SERVER : "http://localhost:3002/";
+export const PASSPORT_SERVER = process.env.PASSPORT_SERVER ;
 
 export interface GroupJwtPayload extends JwtPayload {
   groupUrl: string

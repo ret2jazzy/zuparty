@@ -138,7 +138,7 @@ export function initPCDRoutes(
         description: request.description,
         expiry: request.expiry,
         location: request.location,
-        spotsAvailable: request.spotsAvailable,
+        spotsAvailable: +request.spotsAvailable,
         nullifier: nullifier,
       }
     })
