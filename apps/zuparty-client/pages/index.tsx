@@ -7,7 +7,6 @@ import EventListItem from "../components/EventListItem";
 import { Login } from "../components/Login";
 import { LoginScreen } from "../components/LoginScreen";
 import { ErrorOverlay, ZupollError } from "../components/shared/ErrorOverlay";
-import { useEvents } from "../hooks/useEvents";
 
 export default function Page() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
