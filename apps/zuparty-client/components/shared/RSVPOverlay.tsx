@@ -15,6 +15,8 @@ import {
   PASSPORT_URL,
   SEMAPHORE_GROUP_URL,
 } from "../../src/util";
+import { getLocation } from "../../src/api";
+import { ZupollError } from "./ErrorOverlay";
 
 type RSVPOverlayProps = {
   eventId: string;
@@ -43,21 +45,19 @@ export function RSVPOverlay({
   const [rsvpName, setRsvpName] = useState<string>("");
   const [rsvpTelegram, setRsvpTelegram] = useState<string>("");
   const [rsvpEmail, setRsvpEmail] = useState<string>("");
+  const [eventLocation, setEventLocation] = useState<string | null>(null);
 
   const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
 
-
-  useEffect(() => {
-    if (rsvpState.current === rsvpState.AWAITING_PCDSTR) {
-      rsvpState.current = rsvpState.RECEIVED_PCDSTR;
-    }
-  }, [pcdStr]);
+  
 
   useEffect(() => {
     if (rsvpState.current !== rsvpState.RECEIVED_PCDSTR) return;
     rsvpState.current = rsvpState.DEFAULT;
 
-    // const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
+    //console.log(pcdStr);
+    //const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
+    //console.log(parsedPcd);
     // const request: CreateEventRequest = {
     //   name: partyName,
     //   description: partyDescription,
@@ -67,26 +67,22 @@ export function RSVPOverlay({
     //   proof: parsedPcd.pcd,
     // };
 
-    // async function doRequest() {
-    //   const res = await createEvent(request);
-    //   if (!res.ok) {
-    //     const resErr = await res.text();
-    //     console.error("error posting post to the server: ", resErr);
-    //     const err = {
-    //       title: "Create poll failed",
-    //       message: `Server Error: ${resErr}`,
-    //     } as ZupollError;
-    //     onError(err);
-    //     return;
-    //   }
-    //   const jsonRes = await res.json();
+    async function doRequest() {
+      const res = await getLocation(stableStringify(pcdStr));
+      if (!res.ok) {
+        const resErr = await res.text();
+        console.error("error posting post to the server: ", resErr);
+        const err = {
+          title: "Create poll failed",
+          message: `Server Error: ${resErr}`,
+        } as ZupollError;
+        return;
+      }
+      const jsonRes = await res.json();
+      setEventLocation(jsonRes.found);
+    }
 
-    //   onCreated(jsonRes.eventId);
-    //   setPartyDescription("");
-    //   setPartyExpiry(new Date(new Date().getTime() + 1000 * 60 * 60 * 24));
-    // }
-
-    // doRequest();
+    doRequest();
   }, [pcdStr]);
 
   const signal : RSVPSignal = {
@@ -122,6 +118,7 @@ export function RSVPOverlay({
   return (
     <Overlay onClose={onClose}>
       <Body>
+        {(eventLocation != null) && <div>test</div>}
         <h1>RSVP</h1>
         <StyledForm onSubmit={handleSubmit}>
           <StyledLabel htmlFor="name">

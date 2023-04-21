@@ -84,3 +84,17 @@ export async function listPolls(
   if (!res.ok) return null;
   return await res.json();
 }
+
+export async function getLocation(
+  proof: string
+): Promise<any> {
+  const url = `${ZUPARTY_SERVER_URL}event/:id/location`;
+  return await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(proof),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
+}
