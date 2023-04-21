@@ -15,7 +15,6 @@ export default function Page() {
   const [error, setError] = useState<ZupollError>();
   const [createModal, setCreateModal] = useState<boolean | undefined>();
   const router = useRouter();
-  const { data: events, isLoading } = useEvents(accessToken);
 
   function parseJwt(token: string) {
     const base64Url = token.split(".")[1];
@@ -62,23 +61,6 @@ export default function Page() {
     router.push(`/event/${eventId}`)
   }
 
-  const renderEvents = () => {
-    if (!accessToken) return null;
-    return <>
-      <h3>
-        Your events:
-      </h3>
-      <br />
-      {!isLoading && (!events || events?.length === 0) ?
-        <p>You have no events created.</p>
-        :
-        events?.map(event => (
-          <EventListItem
-            key={event.id}
-            event={event} />
-        ))}
-    </>
-  }
   return (
     <Wrap>
       <ReferendumSection>
@@ -115,8 +97,6 @@ export default function Page() {
           {error && (
             <ErrorOverlay error={error} onClose={() => setError(undefined)} />
           )}
-          <br />
-          {renderEvents()}
         </>
       </ReferendumSection>
     </Wrap>
