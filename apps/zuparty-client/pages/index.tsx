@@ -3,9 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "../components/core/Button";
 import { CreatePoll } from "../components/CreatePoll";
-import EventListItem from "../components/EventListItem";
-import { Login } from "../components/Login";
-import { LoginScreen } from "../components/LoginScreen";
 import { ErrorOverlay, ZupollError } from "../components/shared/ErrorOverlay";
 
 export default function Page() {
@@ -31,22 +28,6 @@ export default function Page() {
     }
     setAccessToken(token);
   }, [accessToken]);
-
-  const updateAccessToken = (token: string | null, group: string | null) => {
-    setAccessToken(token);
-    setGroup(group);
-    if (!token) {
-      window.localStorage.removeItem("access_token");
-    } else {
-      window.localStorage.setItem("access_token", token);
-    }
-  };
-
-  const logout = () => {
-    if (window.confirm("Are you sure you want to log out?")) {
-      updateAccessToken(null, null);
-    }
-  };
 
   const onCreate = () => {
     setCreateModal(!createModal);
@@ -79,11 +60,7 @@ export default function Page() {
           <img src="/images/zuparty-logo_text.png" alt="Zuzalu" width="238" height="88" />
           <PartyTitle>Parties by Zuzalians, for Zuzalians</PartyTitle>
           <br />
-          {accessToken ?
-
-            <Button onClick={onCreate}>Create Event</Button> :
-            <LoginScreen updateAccessToken={updateAccessToken} />
-          }
+          <Button onClick={onCreate}>Create Event</Button>
           {createModal && (
             <CreatePoll onCreated={handleNewEvent} onError={onError} onClose={() => setCreateModal(false)} />
           )}
