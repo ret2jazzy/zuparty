@@ -11,14 +11,11 @@ import { createPoll, createEvent } from "../src/api";
 import { Overlay } from "./shared/Overlay";
 import {
   CreatePollRequest,
-  PollSignal,
-  PollType,
-  UserType,
+  EventSignal,
   CreateEventRequest
 } from "../src/types";
 import {
   PASSPORT_URL,
-  SEMAPHORE_ADMIN_GROUP_URL,
   SEMAPHORE_GROUP_URL,
 } from "../src/util";
 import { Button } from "./core/Button";
@@ -30,15 +27,17 @@ enum CreatePollState {
   RECEIVED_PCDSTR,
 }
 
+type CreatePollProps = {
+  onCreated: (eventId: string) => void;
+  onError: (err: ZupollError) => void;
+  onClose: () => void;
+}
+
 export function CreatePoll({
   onCreated,
   onError,
   onClose,
-}: {
-  onCreated: (newPoll: string) => void;
-  onError: (err: ZupollError) => void;
-  onClose: () => void;
-}) {
+}: CreatePollProps) {
   const createState = useRef<CreatePollState>(CreatePollState.DEFAULT);
   const [partyName, setPartyName] = useState<string>("");
   const [partyDescription, setPartyDescription] = useState<string>("");
@@ -82,7 +81,9 @@ export function CreatePoll({
         onError(err);
         return;
       }
-      onCreated(partyName);
+      const jsonRes = await res.json();
+
+      onCreated(jsonRes.eventId);
       setPartyDescription("");
       setPartyExpiry(new Date(new Date().getTime() + 1000 * 60 * 60 * 24));
     }
@@ -165,7 +166,7 @@ export function CreatePoll({
             id="eventCapacity"
             autoComplete="off"
             value={partyCapacity}
-            onChange={(e) => setPartyCapacity(e.target.value)}
+            onChange={(e) => setPartyCapacity(Number(e.target.value))}
             required
           />
           <StyledLabel htmlFor="expiry">
@@ -226,7 +227,6 @@ const Container = styled.div`
   background: #eee;
   border-radius: 16px;
   width: 100%;
-  margin: 10px;
   padding: 16px;
   margin-bottom: 32px;
   color: #000;

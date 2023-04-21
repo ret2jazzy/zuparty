@@ -7,13 +7,10 @@ export enum UserType {
   NONANON = "NONANON",
 }
 
-export type PollSignal = {
-  // nullifier: string;
-  pollType: PollType;
-  body: string;
+export type EventSignal = {
+  name: string;
+  description: string;
   expiry: Date;
-  options: string[];
-  voterSemaphoreGroupUrls: string[];
 };
 
 export type VoteRequest = {
@@ -50,6 +47,7 @@ export type ZuEvent = {
   deadline?: string
   name?: string;
   description?: string;
+  location?: string;
   spotsAvailable?: number;
   spotsTaken?: number;
   rsvps?: RSVP[]

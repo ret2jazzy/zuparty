@@ -1,17 +1,42 @@
 import { format, parseISO } from 'date-fns';
 import { useRouter } from 'next/router';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from "react";
 import styled from "styled-components";
 import { Button } from '../../components/core/Button';
+import { Login } from '../../components/Login';
 import { RSVPOverlay } from '../../components/shared/RSVPOverlay';
 import { useEvent } from '../../hooks/useEvent';
+import { useEventLocation } from '../../hooks/useEventLocation';
+import { SEMAPHORE_GROUP_URL } from '../../src/util';
 
 export default function EventPage() {
   const router = useRouter()
   const eventId = router.query['id'] as string;
   const [rsvp, setRsvp] = useState<boolean | undefined>();
+  const [showLocation, setShowLocation] = useState<boolean>(false);
+  const [accessToken, setAccessToken] = useState<string | undefined | null>();
   const { data: event, isLoading } = useEvent(eventId);
+  const { data: eventLocation } = useEventLocation(eventId, {
+    enabled: eventId !== undefined && showLocation && accessToken !== undefined && accessToken !== null,
+  });
+
+  useEffect(() => {
+    setAccessToken(window.localStorage.getItem('access_token'));
+  }, []);
+
+  const handleViewLocation = () => {
+    setShowLocation(true);
+  }
+
+  const updateAccessToken = (token: string | null, _group: string | null) => {
+    setAccessToken(token);
+    if (!token) {
+      window.localStorage.removeItem("access_token");
+    } else {
+      window.localStorage.setItem("access_token", token);
+    }
+  };
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -29,24 +54,27 @@ export default function EventPage() {
               <strong>{format(parseISO(event.deadline), 'PPPP')}</strong>
             </p>
           }
-          {/* <p>
-            5:00pm – 7:00pm
-          </p> */}
         </Description>
         <Description>
           { /* make these parts only show up when confirmed RSVP*/}
-          <p>
-            <a href="https://goo.gl/maps/ZSJCD4JZ4J3423Jz9">
-              Špilja Luštica Bay (former Kiki’s location)
-            </a>
-          </p>
+          {eventLocation ?
+            <p>{eventLocation}</p>
+            :
+            accessToken ?
+              <Button onClick={handleViewLocation} style={{ width: 300 }}>
+                View location
+              </Button> :
+              <Login
+                onLoggedIn={updateAccessToken}
+                requestedGroup={SEMAPHORE_GROUP_URL}
+                prompt='Login to view location'
+              />
+
+          }
+        </Description>
+        <Description>
+          <h6>Description:</h6>
           <p>{event.description}</p>
-          {/* <p>
-              We'd like to keep the event fairly small, but please feel free to bring a wine-loving or wine-curious friend.
-            </p>
-            <p>
-              We will be focusing mostly on Central/Eastern European wines.
-            </p> */}
         </Description>
         <ButtonRow>
           <Button onClick={() => setRsvp(true)}>
@@ -59,9 +87,7 @@ export default function EventPage() {
             onClose={() => setRsvp(false)} />
         )}
       </Body>
-      <br />
-      Create Event coming soon!
-    </Container>
+    </Container >
   );
 }
 

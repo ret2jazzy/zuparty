@@ -1,17 +1,16 @@
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "../components/core/Button";
 import { CreatePoll } from "../components/CreatePoll";
-import { LoginScreen } from "../components/LoginScreen";
-import { Polls } from "../components/Polls";
 import { ErrorOverlay, ZupollError } from "../components/shared/ErrorOverlay";
 
 export default function Page() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [group, setGroup] = useState<string | null>(null);
-  const [newPoll, setNewPoll] = useState<string | undefined>();
   const [error, setError] = useState<ZupollError>();
   const [createModal, setCreateModal] = useState<boolean | undefined>();
+  const router = useRouter();
 
   function parseJwt(token: string) {
     const base64Url = token.split(".")[1];
@@ -54,6 +53,10 @@ export default function Page() {
 
   const Wrap = accessToken ? Wrapper : WrapDark;
 
+  const handleNewEvent = (eventId: string) => {
+    router.push(`/event/${eventId}`)
+  }
+
   return (
     <Wrap>
       <ReferendumSection>
@@ -75,13 +78,13 @@ export default function Page() {
           <br />
           <Button onClick={onCreate}>Create Event</Button>
           {createModal && (
-            <CreatePoll onCreated={setNewPoll} onError={onError} onClose={() => setCreateModal(false)} />
+            <CreatePoll onCreated={handleNewEvent} onError={onError} onClose={() => setCreateModal(false)} />
           )}
-          <Polls
+          {/* <Polls
             accessToken={accessToken}
             newPoll={newPoll}
             onError={onError}
-          />
+          /> */}
 
           {error && (
             <ErrorOverlay error={error} onClose={() => setError(undefined)} />

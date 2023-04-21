@@ -2,7 +2,7 @@ import { ZUPARTY_SERVER_URL } from "../src/util";
 import { CreatePollRequest, VoteRequest, CreateEventRequest } from "./types";
 
 export async function createPoll(
-    request: CreatePollRequest
+  request: CreatePollRequest
 ): Promise<Response> {
   const url = `${ZUPARTY_SERVER_URL}create-poll`;
 
@@ -19,31 +19,31 @@ export async function createPoll(
 export async function createEvent(
   request: CreateEventRequest
 ): Promise<Response> {
-const url = `${ZUPARTY_SERVER_URL}create-event`;
+  const url = `${ZUPARTY_SERVER_URL}create-event`;
 
-return await fetch(url, {
-  method: "POST",
-  body: JSON.stringify(request),
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
+  return await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(request),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
 }
 
 export async function doVote(
   request: VoteRequest
 ): Promise<Response> {
-const url = `${ZUPARTY_SERVER_URL}vote`;
+  const url = `${ZUPARTY_SERVER_URL}vote`;
 
-return await fetch(url, {
-  method: "POST",
-  body: JSON.stringify(request),
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
+  return await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(request),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
 }
 
 export async function login(
