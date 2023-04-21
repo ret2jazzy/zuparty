@@ -9,6 +9,10 @@ import { RSVPOverlay } from '../../components/shared/RSVPOverlay';
 import { useEvent } from '../../hooks/useEvent';
 import { useEventLocation } from '../../hooks/useEventLocation';
 import { SEMAPHORE_GROUP_URL } from '../../src/util';
+import {
+  openZuzaluMembershipPopup,
+  usePassportPopupMessages,
+} from "@pcd/passport-interface";
 
 export default function EventPage() {
   const router = useRouter()
@@ -21,6 +25,8 @@ export default function EventPage() {
   const { data: eventLocation } = useEventLocation(eventId, {
     enabled: eventId !== undefined && showLocation && accessToken !== undefined && accessToken !== null,
   });
+
+  const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
 
   useEffect(() => {
     setAccessToken(window.localStorage.getItem('access_token'));
@@ -56,9 +62,9 @@ export default function EventPage() {
             </p>
           }
         </Description>
-        {hasRsvp &&
+        {/* {hasRsvp &&
           <Description>
-            { /* make these parts only show up when confirmed RSVP*/}
+            { /* make these parts only show up when confirmed RSVP}
             {eventLocation ?
               <p>{eventLocation}</p>
               :
@@ -74,7 +80,7 @@ export default function EventPage() {
 
             }
           </Description>
-        }
+        } */}
         <Description>
           <h6>Description:</h6>
           <p>{event.description}</p>
@@ -82,7 +88,7 @@ export default function EventPage() {
         {!hasRsvp &&
           <ButtonRow>
             <Button onClick={() => setShowRsvp(true)}>
-              RSVP to see details
+              See details
             </Button>
           </ButtonRow>
         }

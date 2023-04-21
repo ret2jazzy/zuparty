@@ -1,14 +1,31 @@
 import * as React from "react";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { Overlay } from "./Overlay";
 import { Button } from "../core/Button";
 import { useRSVPMutation } from "../../hooks/useRSVPMutation";
+import {
+  openZuzaluMembershipPopup,
+  usePassportPopupMessages,
+} from "@pcd/passport-interface";
+import { sha256 } from "js-sha256";
+import stableStringify from "json-stable-stringify";
+import { generateMessageHash } from "@pcd/semaphore-signature-pcd";
+import {
+  PASSPORT_URL,
+  SEMAPHORE_GROUP_URL,
+} from "../../src/util";
 
 type RSVPOverlayProps = {
   eventId: string;
   onClose: () => void;
   onSuccess: () => void;
+}
+
+enum RSVPState {
+  DEFAULT,
+  AWAITING_PCDSTR,
+  RECEIVED_PCDSTR,
 }
 
 export function RSVPOverlay({
@@ -21,9 +38,74 @@ export function RSVPOverlay({
       onSuccess()
     }
   });
+
+  const rsvpState = useRef<RSVPState>(RSVPState.DEFAULT);
   const [rsvpName, setRsvpName] = useState<string>("");
   const [rsvpTelegram, setRsvpTelegram] = useState<string>("");
   const [rsvpEmail, setRsvpEmail] = useState<string>("");
+
+  const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
+
+
+  useEffect(() => {
+    if (rsvpState.current === rsvpState.AWAITING_PCDSTR) {
+      rsvpState.current = rsvpState.RECEIVED_PCDSTR;
+    }
+  }, [pcdStr]);
+
+  useEffect(() => {
+    if (rsvpState.current !== rsvpState.RECEIVED_PCDSTR) return;
+    rsvpState.current = rsvpState.DEFAULT;
+
+    // const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
+    // const request: CreateEventRequest = {
+    //   name: partyName,
+    //   description: partyDescription,
+    //   expiry: partyExpiry,
+    //   location: partyLocation,
+    //   spotsAvailable: partyCapacity,
+    //   proof: parsedPcd.pcd,
+    // };
+
+    // async function doRequest() {
+    //   const res = await createEvent(request);
+    //   if (!res.ok) {
+    //     const resErr = await res.text();
+    //     console.error("error posting post to the server: ", resErr);
+    //     const err = {
+    //       title: "Create poll failed",
+    //       message: `Server Error: ${resErr}`,
+    //     } as ZupollError;
+    //     onError(err);
+    //     return;
+    //   }
+    //   const jsonRes = await res.json();
+
+    //   onCreated(jsonRes.eventId);
+    //   setPartyDescription("");
+    //   setPartyExpiry(new Date(new Date().getTime() + 1000 * 60 * 60 * 24));
+    // }
+
+    // doRequest();
+  }, [pcdStr]);
+
+  const signal : RSVPSignal = {
+    id: eventId
+  };
+
+  const signalHash = sha256(stableStringify(signal));
+  const sigHashEnc = generateMessageHash(signalHash).toString();
+
+  rsvpState.current = rsvpState.AWAITING_PCDSTR;
+
+  openZuzaluMembershipPopup(
+    PASSPORT_URL,
+    window.location.origin + "/popup",
+    SEMAPHORE_GROUP_URL,
+    "zuparty",
+    sigHashEnc,
+    sigHashEnc
+  );
 
   const handleSubmit: FormEventHandler = async (event) => {
     event.preventDefault();
@@ -86,6 +168,10 @@ export function RSVPOverlay({
     </Overlay>
   );
 }
+
+export type RSVPSignal = {
+  id: string;
+};
 
 export type RSVPRequest = {
   name: string;
