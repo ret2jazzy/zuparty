@@ -7,13 +7,14 @@ import { sha256 } from "js-sha256";
 import stableStringify from "json-stable-stringify";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { createPoll } from "../src/api";
+import { createPoll, createEvent } from "../src/api";
 import { Overlay } from "./shared/Overlay";
 import {
   CreatePollRequest,
   PollSignal,
   PollType,
   UserType,
+  CreateEventRequest
 } from "../src/types";
 import {
   PASSPORT_URL,
@@ -39,9 +40,11 @@ export function CreatePoll({
   onClose: () => void;
 }) {
   const createState = useRef<CreatePollState>(CreatePollState.DEFAULT);
-  const [pollBody, setPollBody] = useState<string>("");
-  const [pollOptions, setPollOptions] = useState<Array<string>>([]);
-  const [pollExpiry, setPollExpiry] = useState<Date>(
+  const [partyName, setPartyName] = useState<string>("");
+  const [partyDescription, setPartyDescription] = useState<string>("");
+  const [partyLocation, setPartyLocation] = useState<string>("");
+  const [partyCapacity, setPartyCapacity] = useState<string>("");
+  const [partyExpiry, setPartyExpiry] = useState<Date>(
     new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
   );
 
@@ -58,19 +61,17 @@ export function CreatePoll({
     createState.current = CreatePollState.DEFAULT;
 
     const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
-    const request: CreatePollRequest = {
-      pollsterType: UserType.ANON,
-      pollsterSemaphoreGroupUrl: SEMAPHORE_ADMIN_GROUP_URL,
-      pollType: PollType.REFERENDUM,
-      body: pollBody,
-      expiry: pollExpiry,
-      options: pollOptions,
-      voterSemaphoreGroupUrls: [SEMAPHORE_GROUP_URL],
+    const request: CreateEventRequest = {
+      name: partyName,
+      description: partyDescription,
+      expiry: partyExpiry,
+      location: partyLocation,
+      spotsAvailable: partyCapacity,
       proof: parsedPcd.pcd,
     };
 
     async function doRequest() {
-      const res = await createPoll(request);
+      const res = await createEvent(request);
       if (!res.ok) {
         const resErr = await res.text();
         console.error("error posting post to the server: ", resErr);
@@ -81,20 +82,19 @@ export function CreatePoll({
         onError(err);
         return;
       }
-      onCreated(pollBody);
-      setPollBody("");
-      setPollOptions([]);
-      setPollExpiry(new Date(new Date().getTime() + 1000 * 60 * 60 * 24));
+      onCreated(partyName);
+      setPartyDescription("");
+      setPartyExpiry(new Date(new Date().getTime() + 1000 * 60 * 60 * 24));
     }
 
     doRequest();
-  }, [pcdStr, onCreated, onError, pollBody, pollExpiry, pollOptions]);
+  }, [pcdStr, onCreated, onError, partyName, partyDescription, partyCapacity]);
 
   const handleSubmit: FormEventHandler = async (event) => {
     event.preventDefault();
     createState.current = CreatePollState.AWAITING_PCDSTR;
 
-    const signal: PollSignal = {
+    const signal: EventSignal = {
       /*
       name: string,
       description: string;
@@ -103,12 +103,10 @@ export function CreatePoll({
       hostCommitment: string;
       expiry: Date;
       */
-
-      pollType: PollType.REFERENDUM,
-      body: pollBody,
-      expiry: pollExpiry,
-      options: pollOptions,
-      voterSemaphoreGroupUrls: [SEMAPHORE_GROUP_URL],
+        name: partyName,
+        description: partyDescription,
+        expiry: partyExpiry,
+      
     };
     const signalHash = sha256(stableStringify(signal));
     const sigHashEnc = generateMessageHash(signalHash).toString();
@@ -116,8 +114,8 @@ export function CreatePoll({
     openZuzaluMembershipPopup(
       PASSPORT_URL,
       window.location.origin + "/popup",
-      SEMAPHORE_ADMIN_GROUP_URL,
-      "zupoll",
+      SEMAPHORE_GROUP_URL,
+      "zuparty",
       sigHashEnc,
       sigHashEnc
     );
@@ -141,8 +139,8 @@ export function CreatePoll({
           type="text"
           id="eventTitle"
           autoComplete="off"
-          value={pollBody}
-          onChange={(e) => setPollBody(e.target.value)}
+          value={partyName}
+          onChange={(e) => setPartyName(e.target.value)}
           required
         />
         <StyledLabel htmlFor="eventTitle">
@@ -152,8 +150,8 @@ export function CreatePoll({
           type="text"
           id="eventDescription"
           autoComplete="off"
-          value={pollBody}
-          onChange={(e) => setPollBody(e.target.value)}
+          value={partyDescription}
+          onChange={(e) => setPartyDescription(e.target.value)}
           required
         />
         <StyledLabel htmlFor="eventTitle">
@@ -163,8 +161,8 @@ export function CreatePoll({
           type="text"
           id="eventLocation"
           autoComplete="off"
-          value={pollBody}
-          onChange={(e) => setPollBody(e.target.value)}
+          value={partyLocation}
+          onChange={(e) => setPartyLocation(e.target.value)}
           required
         />
         <StyledLabel htmlFor="eventTitle">
@@ -174,8 +172,8 @@ export function CreatePoll({
           type="number"
           id="eventCapacity"
           autoComplete="off"
-          value={pollBody}
-          onChange={(e) => setPollBody(e.target.value)}
+          value={partyCapacity}
+          onChange={(e) => setPartyCapacity(e.target.value)}
           required
         />
         <StyledLabel htmlFor="expiry">
@@ -185,8 +183,8 @@ export function CreatePoll({
           type="datetime-local"
           autoComplete="off"
           id="eventStart"
-          value={getDateString(pollExpiry)}
-          onChange={(e) => setPollExpiry(new Date(e.target.value))}
+          value={getDateString(partyExpiry)}
+          onChange={(e) => setPartyExpiry(new Date(e.target.value))}
           required
         />
         <SubmitRow>

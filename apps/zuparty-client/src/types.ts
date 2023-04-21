@@ -64,3 +64,12 @@ export type RSVP = {
   email?: string;
   eventId?: string;
 }
+
+export type CreateEventRequest = {
+  name: string;
+  description: string;
+  location: string;
+  spotsAvailable: number;
+  expiry: Date;
+  proof: string
+};

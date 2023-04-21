@@ -21,6 +21,7 @@ model Event {
     expiry    DateTime
     name String
     description String
+    location String
     spotsAvailable Int
     nullifier String @unique 
     spotsTaken Int @default(0)

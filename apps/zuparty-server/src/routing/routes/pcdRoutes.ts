@@ -137,6 +137,7 @@ export function initPCDRoutes(
         name: request.name,
         description: request.description,
         expiry: request.expiry,
+        location: request.location,
         spotsAvailable: request.spotsAvailable,
         nullifier: nullifier,
       }
@@ -158,9 +159,8 @@ export type RSVPRequest = {
 export type CreateEventRequest = {
   name: string;
   description: string;
+  location: string;
   spotsAvailable: number;
-  hostuuid: string;
-  hostCommitment: string;
   expiry: Date;
   proof: string
 };

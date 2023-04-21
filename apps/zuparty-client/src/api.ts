@@ -1,5 +1,5 @@
 import { ZUPOLL_SERVER_URL } from "../src/util";
-import { CreatePollRequest, VoteRequest } from "./types";
+import { CreatePollRequest, VoteRequest, CreateEventRequest } from "./types";
 
 export async function createPoll(
     request: CreatePollRequest
@@ -14,6 +14,21 @@ export async function createPoll(
       Accept: "application/json",
     },
   });
+}
+
+export async function createEvent(
+  request: CreateEventRequest
+): Promise<Response> {
+const url = `${ZUPOLL_SERVER_URL}create-event`;
+
+return await fetch(url, {
+  method: "POST",
+  body: JSON.stringify(request),
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
 }
 
 export async function doVote(
