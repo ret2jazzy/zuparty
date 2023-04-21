@@ -34,6 +34,45 @@ export function initPCDRoutes(
 
   })
 
+  app.post("/rsvps/:eventId/location", async (req: Request, res: Response, next: NextFunction) => {
+    let uuid = req.params.eventId; 
+
+    const request = req.body as LocationRequest; 
+
+    try{
+      const signal: RSVPSignal = {
+        id: uuid
+      };
+
+      const signalHash = sha256(stableStringify(signal));
+
+      const nullifier = await verifyGroupProof(
+        SEMAPHORE_GROUP_URL!, 
+        request.proof,
+        {
+          signal: signalHash,
+          allowedGroups: [SEMAPHORE_GROUP_URL!],
+          claimedExtNullifier: signalHash
+        }
+      );
+
+      let rsvpFound = await prisma.rSVP.findUnique({
+        where:{
+          nullifier: nullifier
+        },
+        include:{
+          Event: true
+        }
+      });
+
+      res.json({"found": rsvpFound});
+
+    }catch(e){
+      console.log("ERROR");
+      res.json({"found":null});
+    }
+  });
+
 // you can see RSVPs but only if you're owner
   app.post("/rsvps/:eventId", async (req: Request, res: Response, next: NextFunction) => {
     let uuid = req.params.eventId; 
@@ -84,17 +123,33 @@ export function initPCDRoutes(
     try{
       const request = req.body as RSVPRequest;
 
-      const rsvpEmail = request.email;
-      let found = await prisma.rSVP.findFirst({
-        where:{
-          email: rsvpEmail,
-          eventId: request.eventId,
-        }
-      });
+      // const rsvpEmail = request.email;
+      // let found = await prisma.rSVP.findFirst({
+      //   where:{
+      //     email: rsvpEmail,
+      //     eventId: request.eventId,
+      //   }
+      // });
 
-      if (found !== null){
-        throw new Error("User already RSVP-ed");
-      }
+      // if (found !== null){
+      //   throw new Error("User already RSVP-ed");
+      // }
+
+      const signal: RSVPSignal = {
+        id: request.eventId
+      };
+
+      const signalHash = sha256(stableStringify(signal));
+
+      const nullifier = await verifyGroupProof(
+        SEMAPHORE_GROUP_URL!, 
+        request.proof,
+        {
+          signal: signalHash,
+          allowedGroups: [SEMAPHORE_GROUP_URL!],
+          claimedExtNullifier: signalHash
+        }
+      );
 
       await prisma.rSVP.create({
         data:{
@@ -102,6 +157,7 @@ export function initPCDRoutes(
           telegram: request.telegram,
           email: request.email,
           eventId: request.eventId,
+          nullifier: nullifier
         }
       })
       res.json({rsvp: 200});
@@ -148,12 +204,21 @@ export function initPCDRoutes(
   
 }
 
+export type RSVPSignal = {
+  id: string;
+}
+
+export type LocationRequest = {
+  proof: string;
+}
+
 export type RSVPRequest = {
   name: string;
   telegram: string;
   uuid: string | undefined;
   email: string;
-  eventId: string
+  eventId: string;
+  proof: string;
 };
 
 export type CreateEventRequest = {

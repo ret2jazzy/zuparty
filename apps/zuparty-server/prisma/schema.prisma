@@ -36,5 +36,6 @@ model RSVP {
     email    String
     Event    Event?  @relation(fields: [eventId], references: [id])
     eventId  String?
+    nullifier String @unique
 }
 
