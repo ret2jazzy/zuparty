@@ -12,7 +12,7 @@ export type EventSignal = {
 export type ZuEvent = {
   id?: string;
   createdAt?: string;
-  deadline?: string
+  expiry?: string
   name?: string;
   description?: string;
   location?: string;

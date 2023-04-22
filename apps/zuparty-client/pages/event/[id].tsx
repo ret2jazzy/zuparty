@@ -24,6 +24,7 @@ export default function EventPage() {
   const [showRsvpList, setShowRsvpList] = useState<boolean>(false)
   const [accessToken, setAccessToken] = useState<string | undefined | null>();
   const { data: event, isLoading } = useEvent(eventId);
+  console.log("event data: ", event);
   // const { data: eventLocation } = useEventLocation(eventId, {
   //   enabled: eventId !== undefined && showLocation && accessToken !== undefined && accessToken !== null,
   // });
@@ -51,40 +52,21 @@ export default function EventPage() {
 
   if (!isLoading && !event) return <p>Event not found.</p>
 
+  console.log("event time :", event.expiry);
   return (
     <Container>
       <Body>
         <EventTitle>
           <h1>{event.name}</h1>
         </EventTitle>
-        <Description>
-          {event.deadline &&
-            <p>
-              <strong>{format(parseISO(event.deadline), 'PPPP')}</strong>
-            </p>
-          }
-        </Description>
-        {/* {hasRsvp &&
+        {event.expiry &&
           <Description>
-            { /* make these parts only show up when confirmed RSVP}
-            {eventLocation ?
-              <p>{eventLocation}</p>
-              :
-              accessToken ?
-                <Button onClick={handleViewLocation} style={{ width: 300 }}>
-                  View location
-                </Button> :
-                <Login
-                  onLoggedIn={updateAccessToken}
-                  requestedGroup={SEMAPHORE_GROUP_URL}
-                  prompt='Login to view location'
-                />
-
-            }
+            <h5>Event start:</h5>
+            <p>{format(parseISO(event.expiry), 'PPPP')}</p>
           </Description>
-        } */}
+        }
         <Description>
-          <h6>Description:</h6>
+          <h5>Description:</h5>
           <p>{event.description}</p>
         </Description>
         <ButtonRow>
@@ -125,11 +107,12 @@ const EventTitle = styled.div`
   font-size: 24px;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
+  margin-bottom: 40px;
 `;
 
 const Description = styled.div`
   font-size: 18px;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
   margin-top: -12px;
   overflow-wrap: break-word;
 `;
