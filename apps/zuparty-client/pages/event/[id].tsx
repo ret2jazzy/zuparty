@@ -87,35 +87,31 @@ export default function EventPage() {
           <h6>Description:</h6>
           <p>{event.description}</p>
         </Description>
-          <ButtonRow>
-            <Button onClick={() => setShowRsvp(true)}>
-              RSVP / View details
-            </Button>
-          </ButtonRow>
-          {showRsvp && (
-            <RSVPOverlay
-              eventId={eventId}
-              onClose={() => setShowRsvp(false)}
-              onSuccess={() => {
-                setShowRsvp(false);
-                setHasRsvp(true)
-              }}
-            />
-          )}
-          <br />
-          <ButtonRow>
-            <Button onClick={() => setShowRsvpList(true)}>
-              Manage event (host only)
-            </Button>
-          </ButtonRow>
-          {showRsvpList && (
-            <div> 
-              {/* to be implemented */}
-              <RsvpList eventId={eventId}/>
-              boop. 
-            </div>
-          )}
+        <ButtonRow>
+          <Button onClick={() => setShowRsvp(true)}>
+            RSVP / View details
+          </Button>
+        </ButtonRow>
+        {showRsvp && (
+          <RSVPOverlay
+            eventId={eventId}
+            onClose={() => setShowRsvp(false)}
+            onSuccess={() => {
+              setShowRsvp(false);
+              setHasRsvp(true)
+            }}
+          />
+        )}
+        <br />
+        <ButtonRow>
+          <Button onClick={() => setShowRsvpList(true)}>
+            Manage event (host only)
+          </Button>
+        </ButtonRow>
       </Body>
+      {showRsvpList && (
+        <RsvpList eventId={eventId} />
+      )}
     </Container >
   );
 }
@@ -135,6 +131,7 @@ const Description = styled.div`
   font-size: 18px;
   margin-bottom: 48px;
   margin-top: -12px;
+  overflow-wrap: break-word;
 `;
 
 const Body = styled.div`
