@@ -1,5 +1,5 @@
 import { ZUPARTY_SERVER_URL } from "../src/util";
-import { CreatePollRequest, VoteRequest, CreateEventRequest } from "./types";
+import { CreatePollRequest, VoteRequest, CreateEventRequest, LocationRequest } from "./types";
 
 export async function createPoll(
   request: CreatePollRequest
@@ -86,9 +86,9 @@ export async function listPolls(
 }
 
 export async function getLocation(
-  proof: string
+  proof: LocationRequest, eventId: string
 ): Promise<any> {
-  const url = `${ZUPARTY_SERVER_URL}event/:id/location`;
+  const url = `${ZUPARTY_SERVER_URL}event/${eventId}/location`;
   return await fetch(url, {
     method: "POST",
     body: JSON.stringify(proof),

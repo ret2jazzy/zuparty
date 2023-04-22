@@ -24,10 +24,11 @@ type RSVPOverlayProps = {
   onSuccess: () => void;
 }
 
-enum RSVPState {
-  DEFAULT,
-  AWAITING_PCDSTR,
-  RECEIVED_PCDSTR,
+enum LoadState {
+  WAIT,
+  NOT_RSVP,
+  RSVP_UNCONFIRMED,
+  RSVP_CONFIRMED
 }
 
 export function RSVPOverlay({
@@ -41,7 +42,8 @@ export function RSVPOverlay({
     }
   });
 
-  const rsvpState = useRef<RSVPState>(RSVPState.DEFAULT);
+  const [loadState, setLoadState] = useState<LoadState>(LoadState.WAIT);
+  const [test, setTest] = useState<boolean>(true);
   const [rsvpName, setRsvpName] = useState<string>("");
   const [rsvpTelegram, setRsvpTelegram] = useState<string>("");
   const [rsvpEmail, setRsvpEmail] = useState<string>("");
@@ -49,14 +51,20 @@ export function RSVPOverlay({
 
   const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
 
-  
+
 
   useEffect(() => {
-    if (rsvpState.current !== rsvpState.RECEIVED_PCDSTR) return;
-    rsvpState.current = rsvpState.DEFAULT;
+    if (pcdStr === "") return;
+    console.log("gang");
 
-    //console.log(pcdStr);
-    //const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
+    console.log(pcdStr);
+    const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
+
+    const locrequest : LocationRequest = {
+      proof: parsedPcd.pcd
+    };
+
+
     //console.log(parsedPcd);
     // const request: CreateEventRequest = {
     //   name: partyName,
@@ -68,7 +76,7 @@ export function RSVPOverlay({
     // };
 
     async function doRequest() {
-      const res = await getLocation(stableStringify(pcdStr));
+      const res = await getLocation(locrequest, eventId);
       if (!res.ok) {
         const resErr = await res.text();
         console.error("error posting post to the server: ", resErr);
@@ -79,47 +87,55 @@ export function RSVPOverlay({
         return;
       }
       const jsonRes = await res.json();
-      setEventLocation(jsonRes.found);
+
+      if(jsonRes.found === null){
+        setLoadState(LoadState.NOT_RSVP);
+      }
+
     }
 
     doRequest();
   }, [pcdStr]);
 
-  const signal : RSVPSignal = {
-    id: eventId
-  };
+  useEffect(() => {
+    const signal: RSVPSignal = {
+      id: eventId
+    };
+    const signalHash = sha256(stableStringify(signal));
+    const sigHashEnc = generateMessageHash(signalHash).toString();
+    // debugger;
+    openZuzaluMembershipPopup(
+      PASSPORT_URL,
+      window.location.origin + "/popup",
+      SEMAPHORE_GROUP_URL,
+      "zuparty",
+      sigHashEnc,
+      sigHashEnc
+    );
 
-  const signalHash = sha256(stableStringify(signal));
-  const sigHashEnc = generateMessageHash(signalHash).toString();
+  }, [eventId])
 
-  rsvpState.current = rsvpState.AWAITING_PCDSTR;
-
-  openZuzaluMembershipPopup(
-    PASSPORT_URL,
-    window.location.origin + "/popup",
-    SEMAPHORE_GROUP_URL,
-    "zuparty",
-    sigHashEnc,
-    sigHashEnc
-  );
 
   const handleSubmit: FormEventHandler = async (event) => {
     event.preventDefault();
+    const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
 
     mutate({
       name: rsvpName,
       telegram: rsvpTelegram,
       email: rsvpEmail,
       eventId,
-      uuid: undefined,
+      proof: parsedPcd.pcd
     })
   };
+
+  if(loadState === LoadState.WAIT)return <Overlay><Body><h1>Waiting on zupass...</h1></Body></Overlay>;
 
   return (
     <Overlay onClose={onClose}>
       <Body>
-        {(eventLocation != null) && <div>test</div>}
         <h1>RSVP</h1>
+        <h3>You are not RSVP-ed, please fill out the details</h3>
         <StyledForm onSubmit={handleSubmit}>
           <StyledLabel htmlFor="name">
             Name
@@ -169,6 +185,11 @@ export function RSVPOverlay({
 export type RSVPSignal = {
   id: string;
 };
+
+export type LocationRequest = {
+  proof: string;
+}
+
 
 export type RSVPRequest = {
   name: string;

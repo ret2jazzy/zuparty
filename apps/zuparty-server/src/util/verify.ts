@@ -42,7 +42,6 @@ export async function verifyGroupProof(
   }
 
   // check semaphoreGroupUrl matches the claim
-  console.log("YO")
   console.log(semaphoreGroupUrl)
   const response = await fetch(semaphoreGroupUrl);
   const json = await response.text();

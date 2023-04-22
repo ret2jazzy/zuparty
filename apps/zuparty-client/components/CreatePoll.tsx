@@ -89,7 +89,7 @@ export function CreatePoll({
     }
 
     doRequest();
-  }, [pcdStr, onCreated, onError, partyName, partyDescription, partyCapacity]);
+  }, [pcdStr, onCreated, onError, partyName, partyDescription, partyCapacity, partyExpiry, partyLocation]);
 
   const handleSubmit: FormEventHandler = async (event) => {
     event.preventDefault();

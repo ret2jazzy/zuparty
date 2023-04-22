@@ -22,9 +22,9 @@ export default function EventPage() {
   const [showLocation, setShowLocation] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string | undefined | null>();
   const { data: event, isLoading } = useEvent(eventId);
-  const { data: eventLocation } = useEventLocation(eventId, {
-    enabled: eventId !== undefined && showLocation && accessToken !== undefined && accessToken !== null,
-  });
+  // const { data: eventLocation } = useEventLocation(eventId, {
+  //   enabled: eventId !== undefined && showLocation && accessToken !== undefined && accessToken !== null,
+  // });
 
   const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
 

@@ -20,7 +20,7 @@ export const useRSVPMutation = (options?: Omit<UseMutationOptions<unknown, any, 
 type RSVPRequest = {
   name: string;
   telegram: string;
-  uuid: string | undefined;
   email: string;
-  eventId: string
+  eventId: string;
+  proof: string
 };

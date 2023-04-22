@@ -22,7 +22,7 @@ export default function RSVPSPage() {
       eventId: eventId,
       proof: '',
     });
-  }, [eventId, event])
+  }, [eventId, event, mutate])
 
   if (isLoadingRsvps || isLoading) return null;
   return (

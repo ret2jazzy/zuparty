@@ -34,7 +34,7 @@ export function initPCDRoutes(
 
   })
 
-  app.post("/rsvps/:eventId/location", async (req: Request, res: Response, next: NextFunction) => {
+  app.post("/event/:eventId/location", async (req: Request, res: Response, next: NextFunction) => {
     let uuid = req.params.eventId; 
 
     const request = req.body as LocationRequest; 
@@ -215,7 +215,6 @@ export type LocationRequest = {
 export type RSVPRequest = {
   name: string;
   telegram: string;
-  uuid: string | undefined;
   email: string;
   eventId: string;
   proof: string;
