@@ -16,7 +16,7 @@ import {
   SEMAPHORE_GROUP_URL,
 } from "../../src/util";
 import { getLocation } from "../../src/api";
-import { ZupollError } from "./ErrorOverlay";
+import { ZupartyError } from "./ErrorOverlay";
 
 type RSVPOverlayProps = {
   eventId: string;
@@ -43,15 +43,12 @@ export function RSVPOverlay({
   });
 
   const [loadState, setLoadState] = useState<LoadState>(LoadState.WAIT);
-  const [test, setTest] = useState<boolean>(true);
   const [rsvpName, setRsvpName] = useState<string>("");
   const [rsvpTelegram, setRsvpTelegram] = useState<string>("");
   const [rsvpEmail, setRsvpEmail] = useState<string>("");
   const [eventLocation, setEventLocation] = useState<string | null>(null);
 
   const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
-
-
 
   useEffect(() => {
     if (pcdStr === "") return;
@@ -64,26 +61,15 @@ export function RSVPOverlay({
       proof: parsedPcd.pcd
     };
 
-
-    //console.log(parsedPcd);
-    // const request: CreateEventRequest = {
-    //   name: partyName,
-    //   description: partyDescription,
-    //   expiry: partyExpiry,
-    //   location: partyLocation,
-    //   spotsAvailable: partyCapacity,
-    //   proof: parsedPcd.pcd,
-    // };
-
     async function doRequest() {
       const res = await getLocation(locrequest, eventId);
       if (!res.ok) {
         const resErr = await res.text();
         console.error("error posting post to the server: ", resErr);
         const err = {
-          title: "Create poll failed",
+          title: "get location failed",
           message: `Server Error: ${resErr}`,
-        } as ZupollError;
+        } as ZupartyError;
         return;
       }
       const jsonRes = await res.json();
@@ -213,7 +199,6 @@ export function RSVPOverlay({
 
   }
 
-  
 }
 
 export type RSVPSignal = {

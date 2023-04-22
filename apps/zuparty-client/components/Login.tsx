@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { login } from "../src/api";
 import { PASSPORT_URL } from "../src/util";
 import { Button } from "./core/Button";
-import { ErrorOverlay, ZupollError } from "./shared/ErrorOverlay";
+import { ErrorOverlay, ZupartyError } from "./shared/ErrorOverlay";
 
 /**
  * Login for the user who belongs to the specified semaphore group.
@@ -27,7 +27,7 @@ export function Login({
   prompt: string;
   deemphasized?: boolean;
 }) {
-  const [error, setError] = useState<ZupollError>();
+  const [error, setError] = useState<ZupartyError>();
   const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function Login({
         const err = {
           title: "Login failed",
           message: "Fail to connect to the server, please try again later.",
-        } as ZupollError;
+        } as ZupartyError;
         setError(err);
         return;
       }

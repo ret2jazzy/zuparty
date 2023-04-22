@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { ZupollError } from "./shared/ErrorOverlay";
+import { ZupartyError } from "./shared/ErrorOverlay";
 import { RSVP, RsvpListRequest } from "../src/types";
 import { getRsvpList } from "../src/api";
 import {
@@ -42,9 +42,9 @@ export function RsvpList({
         const resErr = await res.text();
         console.error("error posting post to the server: ", resErr);
         const err = {
-          title: "Create poll failed",
+          title: "get rsvp list failed",
           message: `Server Error: ${resErr}`,
-        } as ZupollError;
+        } as ZupartyError;
         return;
       }
       const jsonRes = await res.json();
@@ -81,6 +81,13 @@ export function RsvpList({
   }, [eventId])
 
   switch(loadState) {
+    case LoadState.WAIT: {
+      return (
+        <Container>
+          Verifying host...
+        </Container>
+      )
+    }
     case LoadState.NOT_HOST: {
       return (
         <Container>

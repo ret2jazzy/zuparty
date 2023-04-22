@@ -5,7 +5,7 @@ export function ErrorOverlay({
   error,
   onClose,
 }: {
-  error: ZupollError;
+  error: ZupartyError;
   onClose: () => void;
 }) {
   return (
@@ -26,7 +26,7 @@ export function ErrorOverlay({
   );
 }
 
-export interface ZupollError {
+export interface ZupartyError {
   /** Big title, should be under 40 chars */
   title: string;
   /** Useful explanation, avoid "Something went wrong." */
