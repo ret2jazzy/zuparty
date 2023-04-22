@@ -20,6 +20,7 @@ import {
 } from "../src/util";
 import { Button } from "./core/Button";
 import { ZupollError } from "./shared/ErrorOverlay";
+import { format } from "date-fns";
 
 enum CreatePollState {
   DEFAULT,
@@ -33,6 +34,8 @@ type CreatePollProps = {
   onClose: () => void;
 }
 
+const today = format(new Date(), 'yyyy-MM-dd');
+
 export function CreatePoll({
   onCreated,
   onError,
@@ -42,7 +45,7 @@ export function CreatePoll({
   const [partyName, setPartyName] = useState<string>("");
   const [partyDescription, setPartyDescription] = useState<string>("");
   const [partyLocation, setPartyLocation] = useState<string>("");
-  const [partyCapacity, setPartyCapacity] = useState<number>(0);
+  const [partyCapacity, setPartyCapacity] = useState<number>(10);
   const [partyExpiry, setPartyExpiry] = useState<Date>(
     new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
   );
@@ -163,6 +166,8 @@ export function CreatePoll({
           </StyledLabel>
           <StyledInput
             type="number"
+            min={1}
+            max={999999}
             id="eventCapacity"
             autoComplete="off"
             value={partyCapacity}
@@ -176,6 +181,7 @@ export function CreatePoll({
             type="datetime-local"
             autoComplete="off"
             id="eventStart"
+            min={today}
             value={getDateString(partyExpiry)}
             onChange={(e) => setPartyExpiry(new Date(e.target.value))}
             required
@@ -184,9 +190,9 @@ export function CreatePoll({
             <Button type="submit">Create Event</Button>
           </SubmitRow>
           {createState.current != CreatePollState.DEFAULT &&
-          <div>
-            Creating event... this may take a few seconds.
-          </div>
+            <div>
+              Creating event... this may take a few seconds.
+            </div>
           }
         </StyledForm>
       </Container>
