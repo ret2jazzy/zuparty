@@ -1,10 +1,17 @@
 import { ZUPARTY_SERVER_URL } from "../src/util";
-import { CreatePollRequest, VoteRequest, CreateEventRequest, LocationRequest, RsvpListRequest } from "./types";
+import { CreateEventRequest, LocationRequest, RsvpListRequest } from "./types";
 
-export async function createPoll(
-  request: CreatePollRequest
-): Promise<Response> {
-  const url = `${ZUPARTY_SERVER_URL}create-poll`;
+export async function login(
+  semaphoreGroupUrl: string,
+  pcdStr: string
+): Promise<any> {
+  const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
+
+  const request = {
+    semaphoreGroupUrl,
+    proof: parsedPcd.pcd
+  };
+  const url = `${ZUPARTY_SERVER_URL}login`;
 
   return await fetch(url, {
     method: "POST",
@@ -29,60 +36,6 @@ export async function createEvent(
       Accept: "application/json",
     },
   });
-}
-
-export async function doVote(
-  request: VoteRequest
-): Promise<Response> {
-  const url = `${ZUPARTY_SERVER_URL}vote`;
-
-  return await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(request),
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  });
-}
-
-export async function login(
-  semaphoreGroupUrl: string,
-  pcdStr: string
-): Promise<any> {
-  const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
-
-  const request = {
-    semaphoreGroupUrl,
-    proof: parsedPcd.pcd
-  };
-  const url = `${ZUPARTY_SERVER_URL}login`;
-
-  return await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(request),
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  });
-}
-
-export async function listPolls(
-  accessToken: string | null
-): Promise<any> {
-
-  // const query = new URLSearchParams({
-  //   page: page.toString(),
-  //   limit: limit.toString()
-  // }).toString();
-  const url = `${ZUPARTY_SERVER_URL}polls`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
-
-  if (!res.ok) return null;
-  return await res.json();
 }
 
 export async function getLocation(

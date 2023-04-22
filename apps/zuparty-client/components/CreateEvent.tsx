@@ -7,10 +7,9 @@ import { sha256 } from "js-sha256";
 import stableStringify from "json-stable-stringify";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { createPoll, createEvent } from "../src/api";
+import { createEvent } from "../src/api";
 import { Overlay } from "./shared/Overlay";
 import {
-  CreatePollRequest,
   EventSignal,
   CreateEventRequest
 } from "../src/types";
@@ -19,29 +18,29 @@ import {
   SEMAPHORE_GROUP_URL,
 } from "../src/util";
 import { Button } from "./core/Button";
-import { ZupollError } from "./shared/ErrorOverlay";
+import { ZupartyError } from "./shared/ErrorOverlay";
 import { format } from "date-fns";
 
-enum CreatePollState {
+enum CreateEventState {
   DEFAULT,
   AWAITING_PCDSTR,
   RECEIVED_PCDSTR,
 }
 
-type CreatePollProps = {
+type CreateEventProps = {
   onCreated: (eventId: string) => void;
-  onError: (err: ZupollError) => void;
+  onError: (err: ZupartyError) => void;
   onClose: () => void;
 }
 
 const today = format(new Date(), 'yyyy-MM-dd');
 
-export function CreatePoll({
+export function CreateEvent({
   onCreated,
   onError,
   onClose,
-}: CreatePollProps) {
-  const createState = useRef<CreatePollState>(CreatePollState.DEFAULT);
+}: CreateEventProps) {
+  const createState = useRef<CreateEventState>(CreateEventState.DEFAULT);
   const [partyName, setPartyName] = useState<string>("");
   const [partyDescription, setPartyDescription] = useState<string>("");
   const [partyLocation, setPartyLocation] = useState<string>("");
@@ -53,14 +52,14 @@ export function CreatePoll({
   const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
 
   useEffect(() => {
-    if (createState.current === CreatePollState.AWAITING_PCDSTR) {
-      createState.current = CreatePollState.RECEIVED_PCDSTR;
+    if (createState.current === CreateEventState.AWAITING_PCDSTR) {
+      createState.current = CreateEventState.RECEIVED_PCDSTR;
     }
   }, [pcdStr]);
 
   useEffect(() => {
-    if (createState.current !== CreatePollState.RECEIVED_PCDSTR) return;
-    createState.current = CreatePollState.DEFAULT;
+    if (createState.current !== CreateEventState.RECEIVED_PCDSTR) return;
+    createState.current = CreateEventState.DEFAULT;
 
     const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
     const request: CreateEventRequest = {
@@ -78,9 +77,9 @@ export function CreatePoll({
         const resErr = await res.text();
         console.error("error posting post to the server: ", resErr);
         const err = {
-          title: "Create poll failed",
+          title: "Create event failed",
           message: `Server Error: ${resErr}`,
-        } as ZupollError;
+        } as ZupartyError;
         onError(err);
         return;
       }
@@ -96,7 +95,7 @@ export function CreatePoll({
 
   const handleSubmit: FormEventHandler = async (event) => {
     event.preventDefault();
-    createState.current = CreatePollState.AWAITING_PCDSTR;
+    createState.current = CreateEventState.AWAITING_PCDSTR;
 
     const signal: EventSignal = {
       name: partyName,
@@ -126,7 +125,7 @@ export function CreatePoll({
   return (
     <Overlay onClose={onClose}>
       <Container>
-        {/* <Header>Admin Create Poll</Header> */}
+        <h1>Create Event</h1>
         <StyledForm onSubmit={handleSubmit}>
           <StyledLabel htmlFor="eventTitle">
             Event title
@@ -189,10 +188,10 @@ export function CreatePoll({
           <SubmitRow>
             <Button type="submit">Create Event</Button>
           </SubmitRow>
-          {createState.current != CreatePollState.DEFAULT &&
-            <div>
-              Creating event... this may take a few seconds.
-            </div>
+          {createState.current != CreateEventState.DEFAULT &&
+          <div>
+            Creating event... this may take a few seconds.
+          </div>
           }
         </StyledForm>
       </Container>

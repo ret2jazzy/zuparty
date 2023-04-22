@@ -2,13 +2,13 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "../components/core/Button";
-import { CreatePoll } from "../components/CreatePoll";
-import { ErrorOverlay, ZupollError } from "../components/shared/ErrorOverlay";
+import { CreateEvent } from "../components/CreateEvent";
+import { ErrorOverlay, ZupartyError } from "../components/shared/ErrorOverlay";
 
 export default function Page() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [group, setGroup] = useState<string | null>(null);
-  const [error, setError] = useState<ZupollError>();
+  const [error, setError] = useState<ZupartyError>();
   const [createModal, setCreateModal] = useState<boolean | undefined>();
   const router = useRouter();
 
@@ -33,7 +33,7 @@ export default function Page() {
     setCreateModal(!createModal);
   }
 
-  const onError = useCallback((err: ZupollError) => setError(err), []);
+  const onError = useCallback((err: ZupartyError) => setError(err), []);
 
   const Wrap = accessToken ? Wrapper : WrapDark;
 
@@ -43,38 +43,19 @@ export default function Page() {
 
   return (
     <Wrap>
-      <ReferendumSection>
-        <>
-          {/* {accessToken ? (
-          <LoggedInHeader>
-            Zuzalu Party
-            [link]Create Event
-            <Button onClick={logout}>Logout</Button>
-          </LoggedInHeader>
-        ) : (
-          <LoginScreen />
-        )} */}
-          {/* {group == SEMAPHORE_GROUP_URL && ( */}
-
-          <img src="/images/zuparty-logo_image.png" alt="Zuzalu" width="240" height="237" />
-          <img src="/images/zuparty-logo_text.png" alt="Zuzalu" width="238" height="88" />
-          <PartyTitle>Parties by Zuzalians, for Zuzalians</PartyTitle>
-          <br />
-          <Button onClick={onCreate}>Create Event</Button>
-          {createModal && (
-            <CreatePoll onCreated={handleNewEvent} onError={onError} onClose={() => setCreateModal(false)} />
-          )}
-          {/* <Polls
-            accessToken={accessToken}
-            newPoll={newPoll}
-            onError={onError}
-          /> */}
-
-          {error && (
-            <ErrorOverlay error={error} onClose={() => setError(undefined)} />
-          )}
-        </>
-      </ReferendumSection>
+      <Section>
+        <img src="/images/zuparty-logo_image.png" alt="Zuzalu" width="240" height="237" />
+        <img src="/images/zuparty-logo_text.png" alt="Zuzalu" width="238" height="88" />
+        <PartyTitle>Parties by Zuzalians, for Zuzalians</PartyTitle>
+        <br />
+        <Button onClick={onCreate}>Create Event</Button>
+        {createModal && (
+          <CreateEvent onCreated={handleNewEvent} onError={onError} onClose={() => setCreateModal(false)} />
+        )}
+        {error && (
+          <ErrorOverlay error={error} onClose={() => setError(undefined)} />
+        )}
+      </Section>
     </Wrap>
   );
 }
@@ -107,7 +88,7 @@ const WrapDark = styled(Wrapper)`
   background: rgb(28, 41, 40);
 `;
 
-const ReferendumSection = styled.div`
+const Section = styled.div`
   width: 75ch;
   max-width: 80vw;
   display: flex;
