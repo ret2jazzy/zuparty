@@ -24,7 +24,7 @@ export default function EventPage() {
   const [showRsvpList, setShowRsvpList] = useState<boolean>(false)
   const [accessToken, setAccessToken] = useState<string | undefined | null>();
   const { data: event, isLoading } = useEvent(eventId);
-  console.log("event data: ", event);
+  // console.log("event data: ", event);
   // const { data: eventLocation } = useEventLocation(eventId, {
   //   enabled: eventId !== undefined && showLocation && accessToken !== undefined && accessToken !== null,
   // });
@@ -52,7 +52,6 @@ export default function EventPage() {
 
   if (!isLoading && !event) return <p>Event not found.</p>
 
-  console.log("event time :", event.expiry);
   return (
     <Container>
       <Body>
