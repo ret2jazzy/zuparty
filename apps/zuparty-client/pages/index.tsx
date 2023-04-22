@@ -49,6 +49,7 @@ export default function Page() {
         <PartyTitle>Parties by Zuzalians, for Zuzalians</PartyTitle>
         <br />
         <Button onClick={onCreate}>Create Event</Button>
+        <Description>You will need a Zuzalu passport to create events.</Description>
         {createModal && (
           <CreateEvent onCreated={handleNewEvent} onError={onError} onClose={() => setCreateModal(false)} />
         )}
@@ -74,6 +75,12 @@ const LoggedInHeader = styled.div`
 const PartyTitle = styled.p`
   font-size: 1.5rem;
   text-align: center;
+`;
+
+const Description = styled.div`
+  font-size: 18px;
+  text-align: center;
+  margin-top: 16px;
 `;
 
 const Wrapper = styled.div`
