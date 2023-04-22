@@ -107,6 +107,7 @@ const EventTitle = styled.div`
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
   margin-bottom: 40px;
+  overflow-wrap: break-word;
 `;
 
 const Description = styled.div`
