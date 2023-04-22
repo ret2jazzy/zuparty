@@ -91,7 +91,7 @@ export default function EventPage() {
         </ButtonRow>
       </Body>
       {showRsvpList && (
-        <RsvpList eventId={eventId} />
+        <RsvpList eventId={eventId} eventName={event.name} eventDescription={event.description} eventExpiry={event.expiry} />
       )}
     </Container >
   );
