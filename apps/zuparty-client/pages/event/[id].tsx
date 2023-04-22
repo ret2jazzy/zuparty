@@ -20,6 +20,7 @@ export default function EventPage() {
   const [showRsvp, setShowRsvp] = useState(false);
   const [hasRsvp, setHasRsvp] = useState(false);
   const [showLocation, setShowLocation] = useState<boolean>(false);
+  const [showRsvpList, setShowRsvpList] = useState<boolean>(false)
   const [accessToken, setAccessToken] = useState<string | undefined | null>();
   const { data: event, isLoading } = useEvent(eventId);
   // const { data: eventLocation } = useEventLocation(eventId, {
@@ -87,7 +88,13 @@ export default function EventPage() {
         </Description>
           <ButtonRow>
             <Button onClick={() => setShowRsvp(true)}>
-              See details
+              RSVP / View details
+            </Button>
+          </ButtonRow>
+          <br />
+          <ButtonRow>
+            <Button disabled onClick={() => setShowRsvpList(true)}> {/* to be implemented */}
+              Manage event coming soon
             </Button>
           </ButtonRow>
         {showRsvp && (
