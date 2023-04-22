@@ -62,7 +62,7 @@ export default function EventPage() {
         {event.expiry &&
           <Description>
             <h5>Event start:</h5>
-            <p>{format(parseISO(event.expiry), 'PPPP')}</p>
+            <p>{format(parseISO(event.expiry), 'PPPPp')}</p>
           </Description>
         }
         <Description>
