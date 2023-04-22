@@ -48,6 +48,7 @@ export function CreateEvent({
   const [partyExpiry, setPartyExpiry] = useState<Date>(
     new Date(new Date().getTime() + 1000 * 60 * 60 * 24)
   );
+  const [disableButton, setDisableButton] = useState<boolean>(false);
 
   const [pcdStr, _passportPendingPCDStr] = usePassportPopupMessages();
 
@@ -72,6 +73,7 @@ export function CreateEvent({
     };
 
     async function doRequest() {
+      setDisableButton(true);
       const res = await createEvent(request);
       if (!res.ok) {
         const resErr = await res.text();
@@ -81,6 +83,7 @@ export function CreateEvent({
           message: `Server Error: ${resErr}`,
         } as ZupartyError;
         onError(err);
+        setDisableButton(false);
         return;
       }
       const jsonRes = await res.json();
@@ -186,11 +189,16 @@ export function CreateEvent({
             required
           />
           <SubmitRow>
-            <Button type="submit">Create Event</Button>
+            {!disableButton && 
+              <Button type="submit">Create Event</Button>
+            }
+            {disableButton && 
+              <Button disabled>Creating Event...</Button>
+            }
           </SubmitRow>
-          {createState.current != CreateEventState.DEFAULT &&
+          {disableButton &&
           <div>
-            Creating event... this may take a few seconds.
+            This may take a few seconds, page will update once event created.
           </div>
           }
         </StyledForm>
