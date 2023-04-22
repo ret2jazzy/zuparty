@@ -189,18 +189,11 @@ export function CreateEvent({
             required
           />
           <SubmitRow>
-            {!disableButton && 
-              <Button type="submit">Create Event</Button>
-            }
-            {disableButton && 
-              <Button disabled>Creating Event...</Button>
-            }
+            <Button type="submit" disabled={disableButton}>
+              {disableButton ? 'Creating event...' : 'Create Event'}
+            </Button>
           </SubmitRow>
-          {disableButton &&
-          <div>
-            This may take a few seconds, page will update once event created.
-          </div>
-          }
+          {disableButton && 'This may take a few seconds, page will update once event created.'}
         </StyledForm>
       </Container>
     </Overlay>
@@ -227,12 +220,13 @@ const StyledInput = styled.input`
   border: none;
   border: 1px solid #555;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 `;
 
 const StyledLabel = styled.label`
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-size: 16px;
+  font-weight: 600;
   display: flex;
   width: 100%;
   text-align: left;

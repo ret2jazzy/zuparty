@@ -98,7 +98,9 @@ export default function EventPage() {
 }
 
 const Container = styled.div`
-  margin-top: 1rem;
+  margin: 1rem auto;
+  width: 75ch;
+  max-width: 90vw;
 `;
 
 const EventTitle = styled.div`
@@ -123,7 +125,6 @@ const Body = styled.div`
   background: linear-gradient(0deg, rgba(23, 23, 23, 0.3), rgba(23, 23, 23, 0.3)), center url(/images/wine.png);
   background-size: cover;
   color: #fff;
-  margin: 2rem;
 `;
 
 const ButtonRow = styled.div`

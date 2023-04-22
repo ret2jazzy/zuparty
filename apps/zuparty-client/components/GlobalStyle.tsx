@@ -14,6 +14,16 @@ export const GlobalStyle = createGlobalStyle`
     background: rgb(28, 41, 40);
   }
 
+  h1 {
+    margin-bottom: 1rem;
+  }
+
+  h5 {
+    margin-bottom: 4px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
   body {
     margin: 0;
     max-width: 100vw;

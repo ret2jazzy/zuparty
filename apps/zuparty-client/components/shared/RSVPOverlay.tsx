@@ -77,7 +77,7 @@ export function RSVPOverlay({
       if (jsonRes.found === null) {
         setLoadState(LoadState.NOT_RSVP);
       } else {
-        console.log("non-null location!");
+        //console.log("non-null location!");
         setEventLocation(jsonRes.found.Event.location);
         setLoadState(LoadState.RSVP_CONFIRMED);
       }
@@ -135,7 +135,7 @@ export function RSVPOverlay({
         <Overlay onClose={onClose}>
           <Body>
             <h1>RSVP</h1>
-            <h3>You are not RSVP-ed, please fill out the details</h3>
+            <p>You have not RSVPed, please fill out the details</p>
             <StyledForm onSubmit={handleSubmit}>
               <StyledLabel htmlFor="name">
                 Name
@@ -173,7 +173,7 @@ export function RSVPOverlay({
               <SubmitRow>
                 <Button type={'submit'}
                   disabled={isLoading}>
-                  {isLoading ? 'Submitting...' : `I'm coming!`}
+                  {isLoading ? 'Submitting RSVP...' : `I'm coming!`}
                 </Button>
               </SubmitRow>
             </StyledForm>
@@ -186,7 +186,7 @@ export function RSVPOverlay({
       return (
         <Overlay onClose={onClose}>
           <Body>
-            Event location:<br />
+            <h5>Event location:</h5>
             {eventLocation?.toString()}
           </Body>
         </Overlay>
@@ -249,8 +249,9 @@ const StyledInput = styled.input`
 `;
 
 const StyledLabel = styled.label`
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-size: 16px;
+  font-weight: 600;
   display: flex;
   width: 100%;
   text-align: left;

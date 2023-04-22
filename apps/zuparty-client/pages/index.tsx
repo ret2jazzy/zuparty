@@ -49,7 +49,7 @@ export default function Page() {
         <PartyTitle>Parties by Zuzalians, for Zuzalians</PartyTitle>
         <br />
         <Button onClick={onCreate}>Create Event</Button>
-        <Description>You will need a Zuzalu passport to create events.</Description>
+        <Description>You'll need a <a href="https://zupass.org/">Zuzalu passport</a> to create events.</Description>
         {createModal && (
           <CreateEvent onCreated={handleNewEvent} onError={onError} onClose={() => setCreateModal(false)} />
         )}
