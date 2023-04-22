@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ZupartyError } from "./shared/ErrorOverlay";
-import { RSVP, RsvpListRequest } from "../src/types";
+import { RSVP, RsvpListRequest, EventSignal } from "../src/types";
 import { getRsvpList } from "../src/api";
 import {
   openZuzaluMembershipPopup,
@@ -22,9 +22,12 @@ enum LoadState {
 }
 
 export function RsvpList({
-  eventId,
+  eventId, eventName, eventDescription, eventExpiry
 }: {
   eventId: string;
+  eventName: string;
+  eventDescription: string;
+  eventExpiry: Date;
 }) {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.WAIT);
   const [rsvpList, setRsvpList] = useState<Array<RSVP>>([]);
@@ -52,10 +55,10 @@ export function RsvpList({
       }
       const jsonRes = await res.json();
 
-      if (jsonRes.found === null) {
+      if (jsonRes.data === null) {
         setLoadState(LoadState.NOT_HOST);
       } else {
-        setRsvpList(jsonRes);
+        setRsvpList(jsonRes.data);
         setLoadState(LoadState.IS_HOST);
       }
 
@@ -65,8 +68,10 @@ export function RsvpList({
   }, [pcdStr]);
 
   useEffect(() => {
-    const signal: RSVPSignal = {
-      id: eventId
+    const signal: EventSignal = {
+      name: eventName,
+      description: eventDescription,
+      expiry: eventExpiry
     };
     const signalHash = sha256(stableStringify(signal));
     const sigHashEnc = generateMessageHash(signalHash).toString();

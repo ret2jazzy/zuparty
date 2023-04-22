@@ -28,6 +28,10 @@ export function initPCDRoutes(
       }
     })
 
+    const privateField = ["location"];
+
+    privateField.forEach((key) => {delete curEvent[key]});
+
     res.json({
       event: curEvent
     });
@@ -110,11 +114,11 @@ export function initPCDRoutes(
       );
 
       if(curEvent.nullifier !== nullifier){
-        res.status(404).json({"data":404})
+        res.status(404).json({"data":null})
         return;
       }
 
-      res.json(curEvent.rsvps);
+      res.json({"data":curEvent.rsvps});
 
   });
 
