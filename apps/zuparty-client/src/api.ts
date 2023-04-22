@@ -1,5 +1,5 @@
 import { ZUPARTY_SERVER_URL } from "../src/util";
-import { CreatePollRequest, VoteRequest, CreateEventRequest, LocationRequest } from "./types";
+import { CreatePollRequest, VoteRequest, CreateEventRequest, LocationRequest, RsvpListRequest } from "./types";
 
 export async function createPoll(
   request: CreatePollRequest
@@ -97,4 +97,21 @@ export async function getLocation(
       Accept: "application/json",
     },
   });
+}
+
+export async function getRsvpList(
+  proof: RsvpListRequest, eventId: string
+): Promise<any> {
+  const url = `${ZUPARTY_SERVER_URL}rsvps/${eventId}`;
+  const res = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(proof),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
+
+  if (!res.ok) return null;
+  return await res.json();
 }

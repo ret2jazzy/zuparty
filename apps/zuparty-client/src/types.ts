@@ -71,3 +71,11 @@ export type CreateEventRequest = {
   expiry: Date;
   proof: string
 };
+
+export type LocationRequest = {
+  proof: string;
+}
+
+export type RsvpListRequest = {
+  proof: string;
+}

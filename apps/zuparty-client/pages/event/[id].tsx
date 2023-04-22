@@ -13,6 +13,7 @@ import {
   openZuzaluMembershipPopup,
   usePassportPopupMessages,
 } from "@pcd/passport-interface";
+import { RsvpList } from '../../components/RsvpList';
 
 export default function EventPage() {
   const router = useRouter()
@@ -91,21 +92,29 @@ export default function EventPage() {
               RSVP / View details
             </Button>
           </ButtonRow>
+          {showRsvp && (
+            <RSVPOverlay
+              eventId={eventId}
+              onClose={() => setShowRsvp(false)}
+              onSuccess={() => {
+                setShowRsvp(false);
+                setHasRsvp(true)
+              }}
+            />
+          )}
           <br />
           <ButtonRow>
-            <Button disabled onClick={() => setShowRsvpList(true)}> {/* to be implemented */}
-              Manage event coming soon
+            <Button onClick={() => setShowRsvpList(true)}>
+              Manage event (host only)
             </Button>
           </ButtonRow>
-        {showRsvp && (
-          <RSVPOverlay
-            eventId={eventId}
-            onClose={() => setShowRsvp(false)}
-            onSuccess={() => {
-              setShowRsvp(false);
-              setHasRsvp(true)
-            }} />
-        )}
+          {showRsvpList && (
+            <div> 
+              {/* to be implemented */}
+              <RsvpList eventId={eventId}/>
+              boop. 
+            </div>
+          )}
       </Body>
     </Container >
   );
