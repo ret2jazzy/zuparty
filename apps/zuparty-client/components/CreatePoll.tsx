@@ -183,6 +183,11 @@ export function CreatePoll({
           <SubmitRow>
             <Button type="submit">Create Event</Button>
           </SubmitRow>
+          {createState.current != CreatePollState.DEFAULT &&
+          <div>
+            Creating event... this may take a few seconds.
+          </div>
+          }
         </StyledForm>
       </Container>
     </Overlay>

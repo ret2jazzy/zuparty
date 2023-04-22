@@ -88,8 +88,12 @@ export function RSVPOverlay({
       }
       const jsonRes = await res.json();
 
-      if(jsonRes.found === null){
+      if (jsonRes.found === null) {
         setLoadState(LoadState.NOT_RSVP);
+      } else {
+        console.log("non-null location!");
+        setEventLocation(jsonRes.found.Event.location);
+        setLoadState(LoadState.RSVP_CONFIRMED);
       }
 
     }
@@ -129,57 +133,87 @@ export function RSVPOverlay({
     })
   };
 
-  if(loadState === LoadState.WAIT)return <Overlay><Body><h1>Waiting on zupass...</h1></Body></Overlay>;
+  switch(loadState) {
+    case LoadState.WAIT: {
+      return (
+        <Overlay onClose={onClose}>
+          <Body>
+            <h1>Waiting on zupass...</h1>
+          </Body>
+        </Overlay>
+      );
+      break;
+    }
+    case LoadState.NOT_RSVP: {
+      return (
+        <Overlay onClose={onClose}>
+          <Body>
+            <h1>RSVP</h1>
+            <h3>You are not RSVP-ed, please fill out the details</h3>
+            <StyledForm onSubmit={handleSubmit}>
+              <StyledLabel htmlFor="name">
+                Name
+              </StyledLabel>
+              <StyledInput
+                type="text"
+                id="name"
+                autoComplete="off"
+                value={rsvpName}
+                onChange={(e) => setRsvpName(e.target.value)}
+                required
+              />
+              <StyledLabel htmlFor="telegram">
+                Telegram handle
+              </StyledLabel>
+              <StyledInput
+                type="text"
+                id="telegram"
+                autoComplete="off"
+                value={rsvpTelegram}
+                onChange={(e) => setRsvpTelegram(e.target.value)}
+                required
+              />
+              <StyledLabel htmlFor="email">
+                Email address
+              </StyledLabel>
+              <StyledInput
+                type="text"
+                id="email"
+                autoComplete="off"
+                value={rsvpEmail}
+                onChange={(e) => setRsvpEmail(e.target.value)}
+                required
+              />
+              <SubmitRow>
+                <Button type={'submit'}
+                  disabled={isLoading}>
+                  {isLoading ? 'Submitting...' : `I'm coming!`}
+                </Button>
+              </SubmitRow>
+            </StyledForm>
+          </Body>
+        </Overlay>
+      );
+      break;
+    }
+    case LoadState.RSVP_CONFIRMED: {
+      return (
+        <Overlay onClose={onClose}>
+          <Body>
+            Event location:<br />
+            {eventLocation?.toString()}
+          </Body>
+        </Overlay>
+      );
+    }
+    default: {
+      return (<div>wut.</div>);
+      break;
+    }
 
-  return (
-    <Overlay onClose={onClose}>
-      <Body>
-        <h1>RSVP</h1>
-        <h3>You are not RSVP-ed, please fill out the details</h3>
-        <StyledForm onSubmit={handleSubmit}>
-          <StyledLabel htmlFor="name">
-            Name
-          </StyledLabel>
-          <StyledInput
-            type="text"
-            id="name"
-            autoComplete="off"
-            value={rsvpName}
-            onChange={(e) => setRsvpName(e.target.value)}
-            required
-          />
-          <StyledLabel htmlFor="telegram">
-            Telegram handle
-          </StyledLabel>
-          <StyledInput
-            type="text"
-            id="telegram"
-            autoComplete="off"
-            value={rsvpTelegram}
-            onChange={(e) => setRsvpTelegram(e.target.value)}
-            required
-          />
-          <StyledLabel htmlFor="email">
-            Email address
-          </StyledLabel>
-          <StyledInput
-            type="text"
-            id="email"
-            autoComplete="off"
-            value={rsvpEmail}
-            onChange={(e) => setRsvpEmail(e.target.value)}
-            required
-          />
-          <SubmitRow>
-            <Button type={'submit'}
-              disabled={isLoading}>
-              {isLoading ? 'Submitting...' : `I'm coming!`}
-            </Button>
-          </SubmitRow>
-        </StyledForm>
-      </Body>
-    </Overlay>
-  );
+  }
+
+  
 }
 
 export type RSVPSignal = {

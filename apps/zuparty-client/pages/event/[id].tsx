@@ -85,13 +85,11 @@ export default function EventPage() {
           <h6>Description:</h6>
           <p>{event.description}</p>
         </Description>
-        {!hasRsvp &&
           <ButtonRow>
             <Button onClick={() => setShowRsvp(true)}>
               See details
             </Button>
           </ButtonRow>
-        }
         {showRsvp && (
           <RSVPOverlay
             eventId={eventId}
