@@ -8,6 +8,12 @@ import {
   usePassportPopupMessages,
 } from "@pcd/passport-interface";
 import { PASSPORT_URL, SEMAPHORE_GROUP_URL } from "../src/util";
+import Link from "next/link";
+import { sha256 } from "js-sha256";
+import { generateMessageHash } from "@pcd/semaphore-group-pcd";
+import { RSVPSignal } from "./shared/RSVPOverlay";
+import stableStringify from "json-stable-stringify";
+import { Button } from "./core/Button";
 
 enum LoadState {
   WAIT,
@@ -27,12 +33,9 @@ export function RsvpList({
 
   useEffect(() => {
     if (pcdStr === "") return;
-    console.log("gang");
-
-    console.log(pcdStr);
     const parsedPcd = JSON.parse(decodeURIComponent(pcdStr));
 
-    const request : RsvpListRequest = {
+    const request: RsvpListRequest = {
       proof: parsedPcd.pcd
     };
 
@@ -52,7 +55,6 @@ export function RsvpList({
       if (jsonRes.found === null) {
         setLoadState(LoadState.NOT_HOST);
       } else {
-        console.log("non-null location!");
         setRsvpList(jsonRes);
         setLoadState(LoadState.IS_HOST);
       }
@@ -94,28 +96,55 @@ export function RsvpList({
           bruv u ain't the host
         </Container>
       );
-      break;
     }
     case LoadState.IS_HOST: {
       return (
         <Container>
-          {rsvpList.map((rsvp) => (
-            <div>
-              rsvp detail goes here
-            </div>
-          ))}
+          <Table>
+            <thead>
+              <tr>
+                <Th>Name</Th>
+                <Th>Email</Th>
+                <Th>Telegram</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {rsvpList?.map((rsvp) => (
+                <tr key={rsvp.id}>
+                  <Td>{rsvp.name}</Td>
+                  <Td>{rsvp.email}</Td>
+                  <Td>{rsvp.telegram}</Td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          {rsvpList?.length === 0 && (
+            <p>No RSVPs.</p>
+          )}
         </Container>
       );
-      break;
     }
     default: {
       return (<div>wut.</div>);
-      break;
     }
   }
 }
 
 const Container = styled.div`
-  width: 100%;
-  margin-bottom: 256px;
+  margin: 2rem;
 `;
+
+const Table = styled.table`
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse; 
+`
+
+const Th = styled.th`
+  border-bottom: 1px solid #fff;
+  padding: 0.5rem;
+`
+
+const Td = styled.td`
+  padding: 0.5rem;
+`
