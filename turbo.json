@@ -10,6 +10,9 @@
       "outputs": [],
       "cache": false
     },
+    "start":{
+      "cache":false
+    },
     "dev": {
       "cache": false
     },
@@ -27,8 +30,7 @@
   "globalEnv": [
     "NODE_ENV",
     "PORT",
-    "ZUPOLL_SERVER_URL",
-    "NEXT_PUBLIC_ZUPOLL_SERVER_URL",
+    "ZUPARTY_SERVER_URL",
     "SEMAPHORE_GROUP_URL",
     "SEMAPHORE_ADMIN_GROUP_URL",
     "PASSPORT_SERVER",

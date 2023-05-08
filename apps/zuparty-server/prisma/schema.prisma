@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// If user type is ANON, the PCD is a Semaphore Group PCD which signs the signal. We just check for membership.
+// If user type is NONANON, the PCD is a Semaphore Signature PCD which signs the signal. We extract the commitment
+//    from the verified PCD and then we check that it is part of a valid group.
+
+model Event {
+    id          String   @id @default(uuid())
+    createdAt   DateTime @default(now())
+    expiry    DateTime
+    name String
+    description String
+    location String
+    spotsAvailable Int
+    nullifier String @unique 
+    spotsTaken Int @default(0)
+    rsvps       RSVP[]
+}
+
+model RSVP {
+    id       String  @id @default(uuid())
+    uuid     String?
+    name     String
+    telegram String
+    email    String
+    Event    Event?  @relation(fields: [eventId], references: [id])
+    eventId  String?
+    nullifier String @unique
+    approved Boolean @default(false)
+    checkedin Boolean @default(false)
+}
+
